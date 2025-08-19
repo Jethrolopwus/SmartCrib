@@ -1,36 +1,177 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SmartCribs - Decentralized Property Rental and Swap Platform
 
-## Getting Started
+A comprehensive Web3 platform for secure, transparent property transactions including rentals, swaps, and sales with on-chain reviews and reputation systems.
 
-First, run the development server:
+## 🏗️ Project Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+smartcribs/
+├── smartcontract/          # Smart contract implementation
+│   ├── contracts/          # Solidity contracts
+│   ├── test/              # Contract tests
+│   ├── scripts/           # Deployment scripts
+│   └── hardhat.config.cjs # Hardhat configuration
+├── frontend/              # Next.js frontend application
+│   ├── app/               # Next.js app directory
+│   ├── components/        # React components
+│   └── public/            # Static assets
+└── docs/                  # Documentation (local only)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Git
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Installation
 
-## Learn More
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd smartcribs
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install all dependencies**
+   ```bash
+   npm run install:all
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Set up environment variables**
+   ```bash
+   # Copy environment template
+   cp smartcontract/.env.example smartcontract/.env
+   
+   # Add your configuration
+   # SEPOLIA_URL=your_sepolia_rpc_url
+   # PRIVATE_KEY=your_private_key
+   # ETHERSCAN_API_KEY=your_etherscan_key
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Development
 
-## Deploy on Vercel
+#### Smart Contracts
+```bash
+# Compile contracts
+npm run smartcontract:compile
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Run tests
+npm run smartcontract:test
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Deploy to local network
+npm run smartcontract:deploy
+
+# Deploy to testnet
+npm run smartcontract:deploy:sepolia
+```
+
+#### Frontend
+```bash
+# Start development server
+npm run frontend:dev
+
+# Build for production
+npm run frontend:build
+
+# Start production server
+npm run frontend:start
+```
+
+#### Full Stack Development
+```bash
+# Run both smart contracts and frontend
+npm run dev
+```
+
+## 📋 Features
+
+### Phase 1: User Management ✅
+- User registration and role management
+- Reputation system
+- Profile management with IPFS
+
+### Phase 2: Property Listings ✅
+- Multi-transaction support (Rent, Swap, Sale)
+- Property verification system
+- Advanced swap proposals
+- IPFS metadata storage
+
+### Phase 3: Transaction Management (Coming Soon)
+- Rental agreements
+- Payment processing
+- Escrow system
+- Dispute resolution
+
+## 🔧 Technology Stack
+
+### Smart Contracts
+- **Solidity** 0.8.24
+- **Hardhat** - Development framework
+- **OpenZeppelin** - Security libraries
+- **Ethereum/Polygon** - Target networks
+
+### Frontend
+- **Next.js** 14 - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Web3.js/Ethers.js** - Blockchain interaction
+
+## 📚 Documentation
+
+Detailed documentation is available in the `docs/` folder:
+- `PHASE_1_README.md` - User management implementation
+- `PHASE_2_README.md` - Property listings implementation
+- `PHASE_1_SUMMARY.md` - Phase 1 completion summary
+- `PHASE_2_SUMMARY.md` - Phase 2 completion summary
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm run smartcontract:test
+
+# Run specific test file
+cd smartcontract && npx hardhat test test/PropertyListings.test.js
+```
+
+## 🚀 Deployment
+
+### Smart Contracts
+```bash
+# Deploy to Sepolia testnet
+npm run smartcontract:deploy:sepolia
+
+# Deploy to Polygon mainnet
+npm run smartcontract:deploy:polygon
+```
+
+### Frontend
+```bash
+# Build and deploy to Vercel
+npm run frontend:build
+# Then deploy to your preferred platform
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the documentation in the `docs/` folder
+- Review the test files for usage examples
+
+---
+
+**SmartCribs** - Building the future of decentralized property transactions
