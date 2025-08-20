@@ -9,7 +9,6 @@ import CTASection from '@/components/molecules/CTASection';
 export default function Home() {
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="pt-16">
         <HeroSection />
         <PropertyShowcase />
@@ -17,7 +16,6 @@ export default function Home() {
         <FeaturesSection />
         <CTASection />
       </main>
-      <Footer />
     </div>
   );
 }
