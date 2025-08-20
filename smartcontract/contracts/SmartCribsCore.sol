@@ -6,44 +6,124 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./interfaces/ISmartCribsCore.sol";
-import "./interfaces/IUserRegistry.sol";
-import "./interfaces/IPropertyListings.sol";
-import "./interfaces/IReviews.sol";
-import "./UserRegistry.sol";
-import "./PropertyListings.sol";
-import "./Reviews.sol";
 
-contract SmartCribsCore is ISmartCribsCore, Ownable, Pausable, ReentrancyGuard {
+contract SmartCribsCore is Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    UserRegistry public userRegistry;
-    PropertyListings public propertyListings;
-    Reviews public reviews;
-    PlatformStats private _platformStats;
+    // Enums
+    enum UserRole { Renter, Homeowner, Agent }
+    enum TransactionType { Rent, Sale }
+    enum ListingStatus { Active, Inactive, Rented, Sold }
+    enum VerificationStatus { Pending, Verified, Rejected }
+
+    // Structs
+    struct UserProfile {
+        UserRole role;
+        string fullName;
+        string profileHash;
+        uint256 reputationScore;
+        uint256 totalTransactions;
+        bool isActive;
+    }
+
+    struct PropertyDetails {
+        string location;
+        uint256 size;
+        uint256 bedrooms;
+        uint256 bathrooms;
+        string propertyType;
+        string amenities;
+        uint256 yearBuilt;
+        bool furnished;
+        bool petsAllowed;
+        string propertyHash;
+    }
+
+    struct RentalTerms {
+        uint256 minDuration;
+        uint256 maxDuration;
+        uint256 securityDeposit;
+        bool utilitiesIncluded;
+        string moveInDate;
+    }
+
+    struct SaleTerms {
+        uint256 downPayment;
+        bool financingAvailable;
+        string closingDate;
+        bool inspectionRequired;
+    }
+
+    struct PropertyListing {
+        uint256 listingId;
+        address owner;
+        TransactionType transactionType;
+        PropertyDetails propertyDetails;
+        uint256 price;
+        address paymentToken;
+        uint256 duration;
+        RentalTerms rentalTerms;
+        SaleTerms saleTerms;
+        string ownershipProof;
+        ListingStatus status;
+        VerificationStatus verificationStatus;
+        uint256 views;
+        uint256 inquiries;
+        uint256 createdAt;
+    }
+
+    struct Review {
+        uint256 reviewId;
+        address reviewer;
+        address reviewedUser;
+        uint256 listingId;
+        uint256 rating;
+        string comment;
+        uint256 createdAt;
+    }
+
+    struct PlatformStats {
+        uint256 totalUsers;
+        uint256 totalListings;
+        uint256 totalTransactions;
+        uint256 totalRevenue;
+    }
+
+    // State variables
+    mapping(address => UserProfile) public userProfiles;
+    mapping(uint256 => PropertyListing) public propertyListings;
+    mapping(uint256 => Review) public reviews;
+    mapping(address => bool) public isUserRegistered;
+    mapping(address => bool) public supportedTokens;
+    mapping(address => uint256[]) public userListings;
+    mapping(address => uint256[]) public userReviews;
+
+    PlatformStats public platformStats;
     uint256 public platformFee;
     uint256 public constant MAX_FEE = 500;
     uint256 public constant FEE_DENOMINATOR = 10000;
+    uint256 public constant MAX_RATING = 5;
 
-    mapping(address => bool) public supportedTokens;
+    uint256 public nextListingId = 1;
+    uint256 public nextReviewId = 1;
+
     address public constant NATIVE_TOKEN = address(0);
 
-    event TokenSupported(
-        address indexed token,
-        bool supported,
-        uint256 timestamp
-    );
-    event FeeCollected(
-        address indexed token,
-        uint256 amount,
-        uint256 timestamp
-    );
+    // Events
+    event UserRegistered(address indexed user, UserRole role, string fullName, uint256 timestamp);
+    event UserRoleUpdated(address indexed user, UserRole newRole, uint256 timestamp);
+    event ProfileUpdated(address indexed user, string profileHash, uint256 timestamp);
+    event PropertyListed(uint256 indexed listingId, address indexed owner, TransactionType transactionType, uint256 timestamp);
+    event PropertyVerified(uint256 indexed listingId, bool verified, string reason, uint256 timestamp);
+    event ReviewSubmitted(uint256 indexed reviewId, address indexed reviewer, address indexed reviewedUser, uint256 rating, uint256 timestamp);
+    event PlatformInitialized(address indexed owner, uint256 timestamp);
+    event FeeUpdated(uint256 newFee, uint256 timestamp);
+    event TokenSupported(address indexed token, bool supported, uint256 timestamp);
+    event FeeCollected(address indexed token, uint256 amount, uint256 timestamp);
 
+    // Modifiers
     modifier onlyRegisteredUser() {
-        require(
-            userRegistry.isUserRegistered(msg.sender),
-            "SmartCribsCore: User not registered"
-        );
+        require(isUserRegistered[msg.sender], "SmartCribsCore: User not registered");
         _;
     }
 
@@ -53,348 +133,250 @@ contract SmartCribsCore is ISmartCribsCore, Ownable, Pausable, ReentrancyGuard {
     }
 
     modifier onlySupportedToken(address token) {
-        require(
-            supportedTokens[token] || token == NATIVE_TOKEN,
-            "SmartCribsCore: Token not supported"
-        );
+        require(supportedTokens[token] || token == NATIVE_TOKEN, "SmartCribsCore: Token not supported");
+        _;
+    }
+
+    modifier onlyListingOwner(uint256 listingId) {
+        require(propertyListings[listingId].owner == msg.sender, "SmartCribsCore: Not listing owner");
+        _;
+    }
+
+    modifier onlyValidListing(uint256 listingId) {
+        require(propertyListings[listingId].listingId != 0, "SmartCribsCore: Listing does not exist");
+        _;
+    }
+
+    modifier onlyValidRating(uint256 rating) {
+        require(rating > 0 && rating <= MAX_RATING, "SmartCribsCore: Invalid rating");
         _;
     }
 
     constructor() Ownable(msg.sender) {
         platformFee = 250;
         supportedTokens[NATIVE_TOKEN] = true;
-
-        userRegistry = new UserRegistry();
-        propertyListings = new PropertyListings(
-            address(userRegistry),
-            address(this)
-        );
-        reviews = new Reviews(
-            address(propertyListings),
-            address(userRegistry)
-        );
-
-        userRegistry.transferOwnership(address(this));
-        propertyListings.transferOwnership(address(this));
-        reviews.transferOwnership(address(this));
     }
 
-    function initialize() external override onlyOwner {
-        require(
-            address(userRegistry) != address(0),
-            "SmartCribsCore: Already initialized"
-        );
-        emit PlatformInitialized(msg.sender, block.timestamp);
-    }
-
-    function registerUser(
-        IUserRegistry.UserRole role,
-        string calldata profileHash
-    ) external override whenNotPaused nonReentrant {
-        userRegistry.registerUserByCore(msg.sender, role, profileHash);
-        _platformStats.totalUsers++;
-    }
-
-    function updateUserRole(
-        IUserRegistry.UserRole newRole
-    ) external override whenNotPaused onlyRegisteredUser {
-        userRegistry.updateUserRoleByCore(msg.sender, newRole);
-    }
-
-    function updateProfile(
-        string calldata profileHash
-    ) external override whenNotPaused onlyRegisteredUser {
-        userRegistry.updateProfileByCore(msg.sender, profileHash);
-    }
-
-    function getUserProfile(
-        address user
-    ) external view override returns (IUserRegistry.UserProfile memory) {
-        return userRegistry.getUserProfile(user);
-    }
-
-    function isUserRegistered(
-        address user
-    ) external view override returns (bool) {
-        return userRegistry.isUserRegistered(user);
-    }
-
-    function getPlatformStats()
-        external
-        view
-        override
-        returns (PlatformStats memory)
+    // User Management Functions
+    function registerUser(UserRole role, string calldata fullName, string calldata profileHash) 
+        external 
+        whenNotPaused 
+        nonReentrant 
     {
-        return _platformStats;
+        require(!isUserRegistered[msg.sender], "SmartCribsCore: User already registered");
+        require(bytes(fullName).length > 0, "SmartCribsCore: Full name required");
+
+        userProfiles[msg.sender] = UserProfile({
+            role: role,
+            fullName: fullName,
+            profileHash: profileHash,
+            reputationScore: 0,
+            totalTransactions: 0,
+            isActive: true
+        });
+
+        isUserRegistered[msg.sender] = true;
+        platformStats.totalUsers++;
+
+        emit UserRegistered(msg.sender, role, fullName, block.timestamp);
     }
 
-    function updatePlatformFee(
-        uint256 newFee
-    ) external override onlyOwner onlyValidFee(newFee) {
+    function updateUserRole(UserRole newRole) 
+        external 
+        whenNotPaused 
+        onlyRegisteredUser 
+    {
+        userProfiles[msg.sender].role = newRole;
+        emit UserRoleUpdated(msg.sender, newRole, block.timestamp);
+    }
+
+    function updateProfile(string calldata profileHash) 
+        external 
+        whenNotPaused 
+        onlyRegisteredUser 
+    {
+        userProfiles[msg.sender].profileHash = profileHash;
+        emit ProfileUpdated(msg.sender, profileHash, block.timestamp);
+    }
+
+    function getUserProfile(address user) external view returns (UserProfile memory) {
+        return userProfiles[user];
+    }
+
+    // Property Listing Functions
+    function createPropertyListing(
+        TransactionType transactionType,
+        PropertyDetails calldata propertyDetails,
+        uint256 price,
+        address paymentToken,
+        uint256 duration,
+        RentalTerms calldata rentalTerms,
+        SaleTerms calldata saleTerms,
+        string calldata ownershipProof
+    ) external whenNotPaused onlyRegisteredUser onlySupportedToken(paymentToken) {
+        require(bytes(propertyDetails.location).length > 0, "SmartCribsCore: Location required");
+        require(price > 0, "SmartCribsCore: Price must be greater than 0");
+
+        uint256 listingId = nextListingId++;
+        
+        propertyListings[listingId] = PropertyListing({
+            listingId: listingId,
+            owner: msg.sender,
+            transactionType: transactionType,
+            propertyDetails: propertyDetails,
+            price: price,
+            paymentToken: paymentToken,
+            duration: duration,
+            rentalTerms: rentalTerms,
+            saleTerms: saleTerms,
+            ownershipProof: ownershipProof,
+            status: ListingStatus.Active,
+            verificationStatus: VerificationStatus.Pending,
+            views: 0,
+            inquiries: 0,
+            createdAt: block.timestamp
+        });
+
+        userListings[msg.sender].push(listingId);
+        platformStats.totalListings++;
+
+        emit PropertyListed(listingId, msg.sender, transactionType, block.timestamp);
+    }
+
+    function verifyProperty(uint256 listingId, bool verified, string calldata reason) 
+        external 
+        onlyOwner 
+        onlyValidListing(listingId) 
+    {
+        propertyListings[listingId].verificationStatus = verified ? VerificationStatus.Verified : VerificationStatus.Rejected;
+        emit PropertyVerified(listingId, verified, reason, block.timestamp);
+    }
+
+    function getPropertyListing(uint256 listingId) external view returns (PropertyListing memory) {
+        return propertyListings[listingId];
+    }
+
+    function getPropertyListingsByOwner(address owner) external view returns (uint256[] memory) {
+        return userListings[owner];
+    }
+
+    function getTotalPropertyListings() external view returns (uint256) {
+        return platformStats.totalListings;
+    }
+
+    function getTotalActivePropertyListings() external view returns (uint256) {
+        uint256 count = 0;
+        for (uint256 i = 1; i < nextListingId; i++) {
+            if (propertyListings[i].status == ListingStatus.Active && 
+                propertyListings[i].verificationStatus == VerificationStatus.Verified) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // Review Functions
+    function submitReview(
+        address reviewedUser,
+        uint256 listingId,
+        uint256 rating,
+        string calldata comment
+    ) external whenNotPaused onlyRegisteredUser onlyValidRating(rating) onlyValidListing(listingId) {
+        require(reviewedUser != msg.sender, "SmartCribsCore: Cannot review yourself");
+        require(isUserRegistered[reviewedUser], "SmartCribsCore: Reviewed user not registered");
+
+        uint256 reviewId = nextReviewId++;
+        
+        reviews[reviewId] = Review({
+            reviewId: reviewId,
+            reviewer: msg.sender,
+            reviewedUser: reviewedUser,
+            listingId: listingId,
+            rating: rating,
+            comment: comment,
+            createdAt: block.timestamp
+        });
+
+        userReviews[msg.sender].push(reviewId);
+        
+        // Update reputation score
+        uint256 currentScore = userProfiles[reviewedUser].reputationScore;
+        uint256 totalReviews = userReviews[reviewedUser].length;
+        userProfiles[reviewedUser].reputationScore = (currentScore + rating) / (totalReviews + 1);
+
+        emit ReviewSubmitted(reviewId, msg.sender, reviewedUser, rating, block.timestamp);
+    }
+
+    function getReview(uint256 reviewId) external view returns (Review memory) {
+        return reviews[reviewId];
+    }
+
+    function getUserReviews(address user) external view returns (uint256[] memory) {
+        return userReviews[user];
+    }
+
+    // Platform Management Functions
+    function getPlatformStats() external view returns (PlatformStats memory) {
+        return platformStats;
+    }
+
+    function updatePlatformFee(uint256 newFee) external onlyOwner onlyValidFee(newFee) {
         platformFee = newFee;
         emit FeeUpdated(newFee, block.timestamp);
     }
 
-    function withdrawFees() external override onlyOwner nonReentrant {
+    function addSupportedToken(address token) external onlyOwner {
+        supportedTokens[token] = true;
+        emit TokenSupported(token, true, block.timestamp);
+    }
+
+    function removeSupportedToken(address token) external onlyOwner {
+        supportedTokens[token] = false;
+        emit TokenSupported(token, false, block.timestamp);
+    }
+
+    function withdrawFees() external onlyOwner nonReentrant {
         uint256 balance = address(this).balance;
         require(balance > 0, "SmartCribsCore: No fees to withdraw");
 
         (bool success, ) = payable(owner()).call{value: balance}("");
         require(success, "SmartCribsCore: Fee withdrawal failed");
+        
+        emit FeeCollected(NATIVE_TOKEN, balance, block.timestamp);
     }
 
-    function withdrawTokenFees(
-        address token
-    ) external onlyOwner nonReentrant onlySupportedToken(token) {
+    function withdrawTokenFees(address token) external onlyOwner nonReentrant onlySupportedToken(token) {
         uint256 balance = IERC20(token).balanceOf(address(this));
         require(balance > 0, "SmartCribsCore: No token fees to withdraw");
 
         IERC20(token).safeTransfer(owner(), balance);
+        emit FeeCollected(token, balance, block.timestamp);
     }
 
-    function pause() external override onlyOwner {
-        _pause();
-        userRegistry.pause();
-        emit EmergencyPaused(msg.sender, block.timestamp);
-    }
-
-    function unpause() external override onlyOwner {
-        _unpause();
-        userRegistry.unpause();
-        emit EmergencyUnpaused(msg.sender, block.timestamp);
-    }
-
-    function isPaused() external view override returns (bool) {
-        return paused();
-    }
-
-    function setTokenSupport(address token, bool supported) external onlyOwner {
-        require(
-            token != address(0),
-            "SmartCribsCore: Cannot modify native token support"
-        );
-        supportedTokens[token] = supported;
-        emit TokenSupported(token, supported, block.timestamp);
-    }
-
-    function calculateFee(uint256 amount) public view returns (uint256) {
-        return (amount * platformFee) / FEE_DENOMINATOR;
-    }
-
-    function updatePlatformStats(
-        int256 listingsChange,
-        int256 transactionsChange,
-        uint256 revenueChange
-    ) external {
-        // This will be called by other contracts (PropertyListings, TransactionManager)
-        // In a full implementation, we'd add access control here
-
-        if (listingsChange > 0) {
-            _platformStats.totalListings += uint256(listingsChange);
-        } else if (listingsChange < 0) {
-            _platformStats.totalListings -= uint256(-listingsChange);
-        }
-
-        if (transactionsChange > 0) {
-            _platformStats.totalTransactions += uint256(transactionsChange);
-        } else if (transactionsChange < 0) {
-            _platformStats.totalTransactions -= uint256(-transactionsChange);
-        }
-
-        _platformStats.totalRevenue += revenueChange;
-    }
-
-    function updatePlatformStatsFromPropertyListings() external {
-        uint256 totalListings = propertyListings.getTotalListings();
-        uint256 totalActiveListings = propertyListings.getTotalActiveListings();
-
-        _platformStats.totalListings = totalListings;
-    }
-
-    function getUserRegistryAddress() external view returns (address) {
-        return address(userRegistry);
-    }
-
+    // Utility Functions
     function canListProperties(address user) external view returns (bool) {
-        return userRegistry.canListProperties(user);
+        return isUserRegistered[user] && 
+               (userProfiles[user].role == UserRole.Homeowner || userProfiles[user].role == UserRole.Agent);
     }
 
     function canRentProperties(address user) external view returns (bool) {
-        return userRegistry.canRentProperties(user);
+        return isUserRegistered[user] && userProfiles[user].isActive;
     }
 
-    function createPropertyListing(
-        IPropertyListings.TransactionType transactionType,
-        IPropertyListings.PropertyDetails calldata propertyDetails,
-        uint256 price,
-        address paymentToken,
-        uint256 duration,
-        IPropertyListings.RentalTerms calldata rentalTerms,
-        IPropertyListings.SwapTerms calldata swapTerms,
-        IPropertyListings.SaleTerms calldata saleTerms,
-        string calldata ownershipProof
-    ) external whenNotPaused onlyRegisteredUser returns (uint256) {
-        return
-            propertyListings.createListingByCore(
-                msg.sender,
-                transactionType,
-                propertyDetails,
-                price,
-                paymentToken,
-                duration,
-                rentalTerms,
-                swapTerms,
-                saleTerms,
-                ownershipProof
-            );
+    function pause() external onlyOwner {
+        _pause();
     }
 
-    function updatePropertyListing(
-        uint256 listingId,
-        IPropertyListings.PropertyDetails calldata propertyDetails,
-        uint256 price,
-        address paymentToken,
-        IPropertyListings.RentalTerms calldata rentalTerms,
-        IPropertyListings.SwapTerms calldata swapTerms,
-        IPropertyListings.SaleTerms calldata saleTerms
-    ) external whenNotPaused {
-        propertyListings.updateListing(
-            listingId,
-            propertyDetails,
-            price,
-            paymentToken,
-            rentalTerms,
-            swapTerms,
-            saleTerms
-        );
+    function unpause() external onlyOwner {
+        _unpause();
     }
 
-    function delistProperty(uint256 listingId) external whenNotPaused {
-        propertyListings.delistProperty(listingId);
-    }
-
-    function getPropertyListing(
-        uint256 listingId
-    ) external view returns (IPropertyListings.PropertyListing memory) {
-        return propertyListings.getListing(listingId);
-    }
-
-    function getPropertyListingsByOwner(
-        address owner
-    ) external view returns (uint256[] memory) {
-        return propertyListings.getListingsByOwner(owner);
-    }
-
-    function getPropertyListingsByType(
-        IPropertyListings.TransactionType transactionType
-    ) external view returns (uint256[] memory) {
-        return propertyListings.getListingsByType(transactionType);
-    }
-
-    function getPropertyListingsByLocation(
-        string calldata location
-    ) external view returns (uint256[] memory) {
-        return propertyListings.getListingsByLocation(location);
-    }
-
-    function getActivePropertyListings()
-        external
-        view
-        returns (uint256[] memory)
-    {
-        return propertyListings.getActiveListings();
-    }
-
-    function verifyProperty(
-        uint256 listingId,
-        bool verified,
-        string calldata notes
-    ) external onlyOwner {
-        propertyListings.verifyProperty(listingId, verified, notes);
-    }
-
-    function createSwapProposal(
-        uint256 listingId,
-        uint256 swapListingId,
-        uint256 proposedDate
-    ) external whenNotPaused onlyRegisteredUser returns (uint256) {
-        return
-            propertyListings.createSwapProposalByCore(
-                msg.sender,
-                listingId,
-                swapListingId,
-                proposedDate
-            );
-    }
-
-    function respondToSwapProposal(
-        uint256 proposalId,
-        bool accept
-    ) external whenNotPaused {
-        propertyListings.respondToSwapProposalByCore(
-            msg.sender,
-            proposalId,
-            accept
-        );
-    }
-
-    function getSwapProposal(
-        uint256 proposalId
-    ) external view returns (IPropertyListings.SwapProposal memory) {
-        return propertyListings.getSwapProposal(proposalId);
-    }
-
-    function getSwapProposalsForListing(
-        uint256 listingId
-    ) external view returns (uint256[] memory) {
-        return propertyListings.getSwapProposalsForListing(listingId);
-    }
-
-    function getTotalPropertyListings() external view returns (uint256) {
-        return propertyListings.getTotalListings();
-    }
-
-    function getTotalActivePropertyListings() external view returns (uint256) {
-        return propertyListings.getTotalActiveListings();
-    }
-
-    function isPropertyListingActive(
-        uint256 listingId
-    ) external view returns (bool) {
-        return propertyListings.isListingActive(listingId);
-    }
-
-    function isPropertyListingOwner(
-        uint256 listingId,
-        address user
-    ) external view returns (bool) {
-        return propertyListings.isListingOwner(listingId, user);
-    }
-
-    function canCreatePropertyListing(
-        address user
-    ) external view returns (bool) {
-        return propertyListings.canCreateListing(user);
-    }
-
-    function emergencyRecover(
-        address token,
-        address to,
-        uint256 amount
-    ) external onlyOwner {
-        require(to != address(0), "SmartCribsCore: Invalid recipient");
-
-        if (token == NATIVE_TOKEN) {
-            require(
-                amount <= address(this).balance,
-                "SmartCribsCore: Insufficient balance"
-            );
-            (bool success, ) = payable(to).call{value: amount}("");
-            require(success, "SmartCribsCore: Transfer failed");
-        } else {
-            IERC20(token).safeTransfer(to, amount);
+    // Emergency functions
+    function emergencyWithdraw() external onlyOwner {
+        uint256 balance = address(this).balance;
+        if (balance > 0) {
+            (bool success, ) = payable(owner()).call{value: balance}("");
+            require(success, "SmartCribsCore: Emergency withdrawal failed");
         }
     }
-
-    receive() external payable {}
 }
