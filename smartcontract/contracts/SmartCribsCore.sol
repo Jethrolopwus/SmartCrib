@@ -9,14 +9,17 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interfaces/ISmartCribsCore.sol";
 import "./interfaces/IUserRegistry.sol";
 import "./interfaces/IPropertyListings.sol";
+import "./interfaces/IReviews.sol";
 import "./UserRegistry.sol";
 import "./PropertyListings.sol";
+import "./Reviews.sol";
 
 contract SmartCribsCore is ISmartCribsCore, Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     UserRegistry public userRegistry;
     PropertyListings public propertyListings;
+    Reviews public reviews;
     PlatformStats private _platformStats;
     uint256 public platformFee;
     uint256 public constant MAX_FEE = 500;
@@ -66,9 +69,14 @@ contract SmartCribsCore is ISmartCribsCore, Ownable, Pausable, ReentrancyGuard {
             address(userRegistry),
             address(this)
         );
+        reviews = new Reviews(
+            address(propertyListings),
+            address(userRegistry)
+        );
 
         userRegistry.transferOwnership(address(this));
         propertyListings.transferOwnership(address(this));
+        reviews.transferOwnership(address(this));
     }
 
     function initialize() external override onlyOwner {
