@@ -50,7 +50,7 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              href="/properties"
+              href="/pagedetails"
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
@@ -68,7 +68,7 @@ const Navbar = () => {
               About
             </Link>
             <Link
-              href="/contact"
+              href="/reviewform"
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
@@ -254,7 +254,7 @@ const Navbar = () => {
                 About
               </Link>
               <Link
-                href="/contact"
+                href="/reviewform"
                 className="block px-3 py-2 font-medium  text-sm"
                 style={{
                   color: theme === "dark" ? "#ffffff" : "#000000",

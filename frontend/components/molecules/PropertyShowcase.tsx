@@ -1,8 +1,51 @@
 "use client";
 import { useTheme } from '@/app/theme-provider';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const PropertyShowcase = () => {
   const { theme } = useTheme();
+   const router = useRouter();
+
+   const properties = [
+    {
+      id: 1,
+      title: "Modern Downtown Apartment",
+      type: "For Rent",
+      price: "$2,500/mo",
+      beds: 2,
+      baths: 2,
+      sqft: 1200,
+      gradient: "from-blue-400 to-purple-500",
+      image: "/plant-green-city-amazing-skyscraper.jpg"
+    },
+    {
+      id: 2,
+      title: "Suburban Family Home",
+      type: "For Sale",
+      price: "$450,000",
+      beds: 4,
+      baths: 3,
+      sqft: 2500,
+      gradient: "from-green-400 to-blue-500",
+      image: "/3d-rendering-house-model.jpg"
+    },
+    {
+      id: 3,
+      title: "Beachfront Condo",
+      type: "For Swap",
+      price: "Swap Available",
+      beds: 1,
+      baths: 1,
+      sqft: 800,
+      gradient: "from-purple-400 to-pink-500",
+      image: "/swimming-pool.jpg"
+    }
+  ];
+
+  const handleViewDetails = (propertyId: number) => {
+    router.push(`/featuredetails/${propertyId}`);
+  };
 
   return (
     <section className="py-20" style={{ backgroundColor: theme === 'dark' ? '#111827' : '#ffffff' }}>
@@ -19,98 +62,44 @@ const PropertyShowcase = () => {
         {/* Property Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Property Card 1 */}
-          <div className="rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border" style={{
-            backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-            borderColor: theme === 'dark' ? '#374151' : '#e5e7eb'
-          }}>
-            <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-500 relative">
-              <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold" style={{
-                backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-                color: theme === 'dark' ? '#ffffff' : '#000000'
+          {properties.map((property) => (
+            <div key={property.id} className="rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border cursor-pointer" style={{
+              backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
+              borderColor: theme === 'dark' ? '#374151' : '#e5e7eb'
               }}>
-                For Rent
+              <div>
+                <img className='h-48 relative w-full' src={property.image} alt={property.title} />
+                <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold" style={{
+                  backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
+                  color: theme === 'dark' ? '#ffffff' : '#000000'
+                }}>
+                  {property.type}
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
+                  {property.title}
+                </h3>
+                <p className="mb-4" style={{ color: theme === 'dark' ? '#d1d5db' : '#4b5563' }}>
+                  {property.beds} bed • {property.baths} baths • {property.sqft} sqft
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
+                    {property.price}
+                  </span>
+                  <button onClick={() => handleViewDetails(property.id)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      View Details
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
-                Modern Downtown Apartment
-              </h3>
-              <p className="mb-4" style={{ color: theme === 'dark' ? '#d1d5db' : '#4b5563' }}>
-                2 bed • 2 bath • 1,200 sq ft
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
-                  $2,500/mo
-                </span>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Property Card 2 */}
-          <div className="rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border" style={{
-            backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-            borderColor: theme === 'dark' ? '#374151' : '#e5e7eb'
-          }}>
-            <div className="h-48 bg-gradient-to-br from-green-400 to-blue-500 relative">
-              <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold" style={{
-                backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-                color: theme === 'dark' ? '#ffffff' : '#000000'
-              }}>
-                For Sale
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
-                Suburban Family Home
-              </h3>
-              <p className="mb-4" style={{ color: theme === 'dark' ? '#d1d5db' : '#4b5563' }}>
-                4 bed • 3 bath • 2,500 sq ft
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
-                  $450,000
-                </span>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Property Card 3 */}
-          <div className="rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border" style={{
-            backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-            borderColor: theme === 'dark' ? '#374151' : '#e5e7eb'
-          }}>
-            <div className="h-48 bg-gradient-to-br from-purple-400 to-pink-500 relative">
-              <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold" style={{
-                backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-                color: theme === 'dark' ? '#ffffff' : '#000000'
-              }}>
-                For Swap
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
-                Beachfront Condo
-              </h3>
-              <p className="mb-4" style={{ color: theme === 'dark' ? '#d1d5db' : '#4b5563' }}>
-                1 bed • 1 bath • 800 sq ft
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
-                  Swap Available
-                </span>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
+        <Link href="/pagedetails" className='flex justify-end'>
+          <button className="px-6 py-3 mt-8 rounded-lg bg-blue-600 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-white/20">
+            See More →
+          </button>
+        </Link>
       </div>
     </section>
   );
