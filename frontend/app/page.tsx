@@ -1,5 +1,3 @@
-import Navbar from '@/components/molecules/Navbar';
-import Footer from '@/components/molecules/Footer';
 import HeroSection from '@/components/molecules/HeroSection';
 import PropertyShowcase from '@/components/molecules/PropertyShowcase';
 import TrustSection from '@/components/molecules/TrustSection';
