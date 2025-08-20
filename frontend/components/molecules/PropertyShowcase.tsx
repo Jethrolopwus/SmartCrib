@@ -58,6 +58,11 @@ const PropertyShowcase = () => {
             Discover amazing properties available for rent, swap, or sale on our decentralized platform
           </p>
         </div>
+        <Link href="/pagedetails" className='flex justify-end mb-4'>
+          <button className="px-6 py-3 mt-8 rounded-lg bg-blue-600 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-white/20">
+            See More →
+          </button>
+        </Link>
 
         {/* Property Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -95,11 +100,6 @@ const PropertyShowcase = () => {
             </div>
           ))}
         </div>
-        <Link href="/pagedetails" className='flex justify-end'>
-          <button className="px-6 py-3 mt-8 rounded-lg bg-blue-600 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-white/20">
-            See More →
-          </button>
-        </Link>
       </div>
     </section>
   );

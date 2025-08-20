@@ -72,6 +72,11 @@ export default function ReviewsPage() {
             Real experiences from our valued customers across Lagos and beyond
           </p>
         </div>
+         <Link href="/detailedreview" className='flex justify-end mr-36 mt-6'>
+          <button className="px-6 py-3 mt-8 rounded-lg bg-blue-600 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-white/20">
+            See More →
+          </button>
+        </Link>
 
         {/* Reviews List */}
         <div className="space-y-4 flex gap-6 items-center justify-center">
@@ -137,11 +142,6 @@ export default function ReviewsPage() {
           ))}
         </div>
         </div>
-        <Link href="/detailedreview" className='flex justify-end mr-36 mt-6'>
-          <button className="px-6 py-3 mt-8 rounded-lg bg-blue-600 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-white/20">
-            See More →
-          </button>
-        </Link>
 
         {reviews.length === 0 && (
           <div className="text-center py-12">
