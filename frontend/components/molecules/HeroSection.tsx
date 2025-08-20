@@ -5,7 +5,7 @@ const HeroSection = () => {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-10 opacity-90">
         <Image
           src="/road-city.jpg"
           alt="City road background"
@@ -14,7 +14,7 @@ const HeroSection = () => {
           priority
         />
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="absolute inset-0 bg-transparent"></div>
       </div>
 
       {/* Hero Content */}

@@ -17,11 +17,5 @@
   "workspaces": [
     "smartcontract",
     "frontend"
-  ],
-  "dependencies": {
-    "@tanstack/react-query": "^5.85.5",
-
-    "viem": "^2.34.0",
-    "wagmi": "^2.16.4"
-  }
+  ]
 }
