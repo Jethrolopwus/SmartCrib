@@ -1,15 +1,19 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAccount } from 'wagmi'
+import { useAccount, useSwitchChain } from 'wagmi'
+import { sepolia } from 'wagmi/chains'
 import { ConnectWallet } from '@/components/atoms/ConnectWallet'
+import { useRegisterUser, useIsUserRegistered } from '@/lib/contracts/hooks'
+import { UserRole } from '@/lib/contracts/types'
 import axios from 'axios'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const Page: React.FC = () => {
   const router = useRouter()
-  const { isConnected, address } = useAccount()
+  const { isConnected, address, chainId } = useAccount()
+  const { switchChain, isPending: isSwitchingChain } = useSwitchChain()
   const [showForm, setShowForm] = useState(true)
   const [role, setRole] = useState('')
   const [fullName, setFullName] = useState('')
@@ -17,6 +21,29 @@ const Page: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [fileCID, setFileCID] = useState<string | null>(null)
   const [filePreview, setFilePreview] = useState<string | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Contract hooks
+  const { data: isRegistered, isLoading: registrationCheckLoading } = useIsUserRegistered();
+  const { 
+    registerUser, 
+    isPending: isRegistering, 
+    isSuccess: registrationSuccess,
+    error: registrationError 
+  } = useRegisterUser();
+
+  // Auto-switch to Sepolia if on wrong network
+  useEffect(() => {
+    if (isConnected && chainId && chainId !== sepolia.id) {
+      console.log('🔄 Auto-switching to Sepolia network...')
+      switchChain({ chainId: sepolia.id })
+    }
+  }, [isConnected, chainId, switchChain])
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const uploadFileToIPFS = async (file: File): Promise<string> => {
     console.log('🚀 Starting IPFS upload...')
@@ -147,6 +174,12 @@ const Page: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
+    // Check if wallet is connected first
+    if (!isConnected) {
+      toast.error('Please connect your wallet first!')
+      return
+    }
+    
     if (!fileCID) {
       toast.error('Please upload a profile file first.')
       return
@@ -156,28 +189,104 @@ const Page: React.FC = () => {
       toast.error('Please fill in all required fields.')
       return
     }
-    
-    const formData = {
-      role,
-      fullName,
-      fileCID,
-      fileName: file?.name || '',
+
+    // Convert role string to UserRole enum
+    let userRole: UserRole;
+    switch (role) {
+      case 'Renter':
+        userRole = 0;
+        break;
+      case 'Homeowner':
+        userRole = 1;
+        break;
+      case 'Both':
+        userRole = 1; // Default to Homeowner for "Both" case
+        break;
+      default:
+        toast.error('Please select a valid role.')
+        return;
     }
-    localStorage.setItem('registrationFormData', JSON.stringify(formData))
-    setShowForm(false)
-    toast.success('Registration data saved! Please connect your wallet.')
+
+    // Create IPFS hash for profile data
+    const profileHash = `ipfs://${fileCID}`;
+    
+    try {
+      console.log('📝 Calling registerUser contract function...')
+      console.log('Parameters:', {
+        role: userRole,
+        fullName,
+        profileHash
+      })
+      
+      // Call the smart contract - this will trigger MetaMask popup
+      registerUser([userRole, fullName, profileHash]);
+      
+      toast.info('Please confirm the transaction in your MetaMask wallet.')
+    } catch (error: any) {
+      console.error('❌ Error calling registerUser:', error)
+      toast.error(`Registration failed: ${error.message}`)
+    }
   }
 
-
-
+  // Handle registration success
   useEffect(() => {
-    if (isConnected) {
-      const storedData = localStorage.getItem('registrationFormData')
-      if (storedData) {
+    if (registrationSuccess) {
+      toast.success('✅ User registered successfully on blockchain!')
+      
+      // Clear all form inputs
+      setRole('')
+      setFullName('')
+      setFile(null)
+      setFileCID(null)
+      setFilePreview(null)
+      setIsSubmitting(false)
+      
+      // Clear form data from localStorage
+      localStorage.removeItem('registrationFormData')
+      
+      // Redirect to profile page after a short delay to show success message
+      setTimeout(() => {
+        router.push('/Profile')
+      }, 1500)
+    }
+  }, [registrationSuccess, router])
+
+  // Handle registration error
+  useEffect(() => {
+    if (registrationError) {
+      console.error('❌ Registration error:', registrationError)
+      toast.error(`Registration failed: ${registrationError.message}`)
+    }
+  }, [registrationError])
+
+  // Check if user is already registered
+  useEffect(() => {
+    if (isMounted && isConnected && !registrationCheckLoading) {
+      if (isRegistered) {
+        toast.info('User is already registered!')
         router.push('/Profile')
       }
     }
-  }, [isConnected, router])
+  }, [isMounted, isConnected, isRegistered, registrationCheckLoading, router])
+
+  // Don't render wallet-dependent content until mounted
+  if (!isMounted) {
+    return (
+      <div
+        className="flex flex-col items-center pt-20 pb-8 min-h-screen text-gray-800 bg-cover bg-center relative"
+        style={{ backgroundImage: "url('/city-background-panoramic-view.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-black/40 z-0"></div>
+        <div className="relative z-10 border border-gray-200 shadow-xl rounded-2xl w-full max-w-xl mx-auto
+        bg-white/95 backdrop-blur-sm h-auto min-h-[600px] flex flex-col">
+          <div className="flex pt-8 pb-6 items-center flex-col">
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">User Registration</h1>
+            <p className='text-gray-500 text-sm text-center px-4'>Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -203,7 +312,63 @@ const Page: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-800 mb-2">User Registration</h1>
             <p className='text-gray-500 text-sm text-center px-4'>Join as a Renter, Homeowner, or Both</p>
           </div>
-          {showForm ? (
+          
+          {/* Wallet Connection Status */}
+          {!isConnected && (
+            <div className="px-6 pb-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-yellow-800 font-medium">Wallet Not Connected</span>
+                </div>
+                <p className="text-yellow-700 text-sm mt-1">Please connect your wallet to continue with registration.</p>
+              </div>
+              <div className="flex justify-center">
+                <ConnectWallet />
+              </div>
+            </div>
+          )}
+
+          {/* Network Warning */}
+          {isConnected && chainId !== sepolia.id && (
+            <div className="px-6 pb-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-blue-800 font-medium">
+                    {isSwitchingChain ? 'Switching to Sepolia...' : 'Wrong Network'}
+                  </span>
+                </div>
+                <p className="text-blue-700 text-sm mt-1">
+                  {isSwitchingChain 
+                    ? 'Please confirm the network switch in your wallet.'
+                    : 'Your wallet needs to be on Sepolia testnet for registration.'
+                  }
+                </p>
+                {!isSwitchingChain && (
+                  <button
+                    onClick={() => switchChain({ chainId: sepolia.id })}
+                    className="mt-2 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                  >
+                    Switch to Sepolia
+                  </button>
+                )}
+                {isSwitchingChain && (
+                  <div className="flex items-center mt-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    <span className="ml-2 text-blue-600 text-sm">Switching...</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Registration Form */}
+          {showForm && (
             <form onSubmit={handleSubmit} className="flex-1 px-6 pb-8">
               <div className="mb-6">
                 <label className='block text-sm font-semibold text-gray-700 mb-3'>Select your role</label>
@@ -307,15 +472,14 @@ const Page: React.FC = () => {
               
               <button
                 type="submit"
-                className='w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+                disabled={!isConnected || isRegistering || !fileCID || !role || !fullName || chainId !== sepolia.id}
+                className='w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
               >
-                Submit Registration
+                {!isConnected ? 'Connect Wallet First' : 
+                 chainId !== sepolia.id ? 'Switch to Sepolia First' :
+                 isRegistering ? 'Confirming in MetaMask...' : 'Submit Registration'}
               </button>
             </form>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full">
-              <ConnectWallet />
-            </div>
           )}
         </div>
       </div>
