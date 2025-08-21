@@ -1,5 +1,5 @@
 // SmartCribsCore Contract Address
-export const SMART_CRIBS_CORE_ADDRESS = '0x4986A795f86Eb3a73C9d28Cca45c12D52fe294Ba';
+export const SMART_CRIBS_CORE_ADDRESS = '0x3Fd7B15519936F88525047bbD3150438074F8195';
 
 // Contract address for Sepolia testnet
 export const CONTRACT_ADDRESSES = {
