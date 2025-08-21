@@ -1,10 +1,10 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("PropertyListings", function () {
-  let smartCribsCore, userRegistry, propertyListings;
+describe("SmartCribsCore - Property Listings", function () {
+  let smartCribsCore;
   let owner, homeowner, renter, verifier;
-  
+
   const PROFILE_HASH = "QmTestProfileHash123456789";
   const PROPERTY_HASH = "QmPropertyHash987654321";
   const OWNERSHIP_PROOF = "QmOwnershipProof123456789";
@@ -12,24 +12,14 @@ describe("PropertyListings", function () {
   beforeEach(async function () {
     [owner, homeowner, renter, verifier] = await ethers.getSigners();
     
-    // Deploy SmartCribsCore (this will deploy UserRegistry and PropertyListings)
+    // Deploy SmartCribsCore (simplified version with all functionality)
     const SmartCribsCore = await ethers.getContractFactory("SmartCribsCore");
     smartCribsCore = await SmartCribsCore.deploy();
     await smartCribsCore.waitForDeployment();
 
-    // Get contract addresses
-    const userRegistryAddress = await smartCribsCore.getUserRegistryAddress();
-    userRegistry = await ethers.getContractAt("UserRegistry", userRegistryAddress);
-    
-    // PropertyListings is deployed by SmartCribsCore but we need to get its address
-    // For now, we'll test through SmartCribsCore
-
-    // Initialize platform
-    await smartCribsCore.initialize();
-
-    // Register users
-    await smartCribsCore.connect(homeowner).registerUser(2, PROFILE_HASH); // Homeowner
-    await smartCribsCore.connect(renter).registerUser(1, PROFILE_HASH); // Renter
+    // Register users with fullName (new requirement)
+    await smartCribsCore.connect(homeowner).registerUser(1, "John Homeowner", PROFILE_HASH); // Homeowner (1)
+    await smartCribsCore.connect(renter).registerUser(0, "Jane Renter", PROFILE_HASH); // Renter (0)
   });
 
   describe("Property Listing Creation", function () {
@@ -55,15 +45,6 @@ describe("PropertyListings", function () {
         moveInDate: "2024-01-01"
       };
 
-      const swapTerms = {
-        desiredLocation: "",
-        minSize: 0,
-        maxSize: 0,
-        swapDuration: 0,
-        swapDate: "",
-        flexibleDates: false
-      };
-
       const saleTerms = {
         downPayment: 0,
         financingAvailable: false,
@@ -81,7 +62,6 @@ describe("PropertyListings", function () {
         ethers.ZeroAddress, // Native token
         duration,
         rentalTerms,
-        swapTerms,
         saleTerms,
         OWNERSHIP_PROOF
       );
@@ -116,15 +96,6 @@ describe("PropertyListings", function () {
         moveInDate: ""
       };
 
-      const swapTerms = {
-        desiredLocation: "",
-        minSize: 0,
-        maxSize: 0,
-        swapDuration: 0,
-        swapDate: "",
-        flexibleDates: false
-      };
-
       const saleTerms = {
         downPayment: ethers.parseEther("50.0"),
         financingAvailable: true,
@@ -133,16 +104,15 @@ describe("PropertyListings", function () {
       };
 
       const price = ethers.parseEther("500.0"); // 500 ETH
-      const duration = 90 * 24 * 60 * 60; // 90 days
+      const duration = 0; // Sale doesn't need duration
 
       const tx = await smartCribsCore.connect(homeowner).createPropertyListing(
-        2, // TransactionType.Sale
+        1, // TransactionType.Sale
         propertyDetails,
         price,
         ethers.ZeroAddress,
         duration,
         rentalTerms,
-        swapTerms,
         saleTerms,
         OWNERSHIP_PROOF
       );
@@ -154,125 +124,9 @@ describe("PropertyListings", function () {
       expect(totalListings).to.equal(1);
     });
 
-    it("Should create a swap listing", async function () {
-      const propertyDetails = {
-        location: "789 Pine St, Miami, FL",
-        size: 1800,
-        bedrooms: 2,
-        bathrooms: 2,
-        propertyType: "Condo",
-        amenities: "Beach Access, Pool, Gym",
-        yearBuilt: 2018,
-        furnished: true,
-        petsAllowed: true,
-        propertyHash: PROPERTY_HASH
-      };
-
-      const rentalTerms = {
-        minDuration: 0,
-        maxDuration: 0,
-        securityDeposit: 0,
-        utilitiesIncluded: false,
-        moveInDate: ""
-      };
-
-      const swapTerms = {
-        desiredLocation: "New York, NY",
-        minSize: 1500,
-        maxSize: 3000,
-        swapDuration: 30,
-        swapDate: "2024-02-01",
-        flexibleDates: true
-      };
-
-      const saleTerms = {
-        downPayment: 0,
-        financingAvailable: false,
-        closingDate: "",
-        inspectionRequired: false
-      };
-
-      const price = 0; // No price for swaps
-      const duration = 60 * 24 * 60 * 60; // 60 days
-
-      const tx = await smartCribsCore.connect(homeowner).createPropertyListing(
-        1, // TransactionType.Swap
-        propertyDetails,
-        price,
-        ethers.ZeroAddress,
-        duration,
-        rentalTerms,
-        swapTerms,
-        saleTerms,
-        OWNERSHIP_PROOF
-      );
-
-      const receipt = await tx.wait();
-      expect(receipt.status).to.equal(1);
-
-      const totalListings = await smartCribsCore.getTotalPropertyListings();
-      expect(totalListings).to.equal(1);
-    });
-
-    it("Should revert if user cannot create listings", async function () {
-      const propertyDetails = {
-        location: "123 Test St",
-        size: 1000,
-        bedrooms: 2,
-        bathrooms: 1,
-        propertyType: "Apartment",
-        amenities: "Basic",
-        yearBuilt: 2020,
-        furnished: false,
-        petsAllowed: false,
-        propertyHash: PROPERTY_HASH
-      };
-
-      const rentalTerms = {
-        minDuration: 30,
-        maxDuration: 365,
-        securityDeposit: ethers.parseEther("1.0"),
-        utilitiesIncluded: true,
-        moveInDate: "2024-01-01"
-      };
-
-      const swapTerms = {
-        desiredLocation: "",
-        minSize: 0,
-        maxSize: 0,
-        swapDuration: 0,
-        swapDate: "",
-        flexibleDates: false
-      };
-
-      const saleTerms = {
-        downPayment: 0,
-        financingAvailable: false,
-        closingDate: "",
-        inspectionRequired: false
-      };
-
-      await expect(
-        smartCribsCore.connect(renter).createPropertyListing(
-          0,
-          propertyDetails,
-          ethers.parseEther("1.0"),
-          ethers.ZeroAddress,
-          30 * 24 * 60 * 60,
-          rentalTerms,
-          swapTerms,
-          saleTerms,
-          OWNERSHIP_PROOF
-        )
-      ).to.be.revertedWith("PropertyListings: User cannot create listings");
-    });
-  });
-
-  describe("Property Verification", function () {
-    let listingId;
-
-    beforeEach(async function () {
-      // Create a listing first
+    it("Should fail to create listing if user is not registered", async function () {
+      const [unregisteredUser] = await ethers.getSigners();
+      
       const propertyDetails = {
         location: "123 Main St, New York, NY",
         size: 1500,
@@ -294,13 +148,50 @@ describe("PropertyListings", function () {
         moveInDate: "2024-01-01"
       };
 
-      const swapTerms = {
-        desiredLocation: "",
-        minSize: 0,
-        maxSize: 0,
-        swapDuration: 0,
-        swapDate: "",
-        flexibleDates: false
+      const saleTerms = {
+        downPayment: 0,
+        financingAvailable: false,
+        closingDate: "",
+        inspectionRequired: false
+      };
+
+      const price = ethers.parseEther("2.5");
+      const duration = 30 * 24 * 60 * 60;
+
+      await expect(
+        smartCribsCore.connect(unregisteredUser).createPropertyListing(
+          0, // TransactionType.Rent
+          propertyDetails,
+          price,
+          ethers.ZeroAddress,
+          duration,
+          rentalTerms,
+          saleTerms,
+          OWNERSHIP_PROOF
+        )
+      ).to.be.revertedWith("SmartCribsCore: User not registered");
+    });
+
+    it("Should fail to create listing with invalid price", async function () {
+      const propertyDetails = {
+        location: "123 Main St, New York, NY",
+        size: 1500,
+        bedrooms: 3,
+        bathrooms: 2,
+        propertyType: "Apartment",
+        amenities: "Parking, Gym, Pool",
+        yearBuilt: 2020,
+        furnished: true,
+        petsAllowed: false,
+        propertyHash: PROPERTY_HASH
+      };
+
+      const rentalTerms = {
+        minDuration: 30,
+        maxDuration: 365,
+        securityDeposit: ethers.parseEther("2.0"),
+        utilitiesIncluded: true,
+        moveInDate: "2024-01-01"
       };
 
       const saleTerms = {
@@ -310,51 +201,27 @@ describe("PropertyListings", function () {
         inspectionRequired: false
       };
 
-      const tx = await smartCribsCore.connect(homeowner).createPropertyListing(
-        0,
-        propertyDetails,
-        ethers.parseEther("2.5"),
-        ethers.ZeroAddress,
-        30 * 24 * 60 * 60,
-        rentalTerms,
-        swapTerms,
-        saleTerms,
-        OWNERSHIP_PROOF
-      );
+      const price = 0; // Invalid price
+      const duration = 30 * 24 * 60 * 60;
 
-      // Get the listing ID from the event
-      const receipt = await tx.wait();
-      listingId = 1; // First listing
-    });
-
-    it("Should verify a property listing", async function () {
-      await smartCribsCore.connect(owner).verifyProperty(listingId, true, "Property verified successfully");
-
-      const listing = await smartCribsCore.getPropertyListing(listingId);
-      expect(listing.verificationStatus).to.equal(2); // Verified
-      expect(listing.status).to.equal(0); // Active
-    });
-
-    it("Should reject a property listing", async function () {
-      await smartCribsCore.connect(owner).verifyProperty(listingId, false, "Invalid ownership proof");
-
-      const listing = await smartCribsCore.getPropertyListing(listingId);
-      expect(listing.verificationStatus).to.equal(3); // Rejected
-      expect(listing.status).to.equal(1); // Pending
-    });
-
-    it("Should revert if non-owner tries to verify", async function () {
       await expect(
-        smartCribsCore.connect(renter).verifyProperty(listingId, true, "Test")
-      ).to.be.revertedWith("PropertyListings: Not authorized verifier");
+        smartCribsCore.connect(homeowner).createPropertyListing(
+          0, // TransactionType.Rent
+          propertyDetails,
+          price,
+          ethers.ZeroAddress,
+          duration,
+          rentalTerms,
+          saleTerms,
+          OWNERSHIP_PROOF
+        )
+      ).to.be.revertedWith("SmartCribsCore: Price must be greater than 0");
     });
   });
 
   describe("Property Listing Management", function () {
-    let listingId;
-
     beforeEach(async function () {
-      // Create and verify a listing
+      // Create a test listing
       const propertyDetails = {
         location: "123 Main St, New York, NY",
         size: 1500,
@@ -376,15 +243,6 @@ describe("PropertyListings", function () {
         moveInDate: "2024-01-01"
       };
 
-      const swapTerms = {
-        desiredLocation: "",
-        minSize: 0,
-        maxSize: 0,
-        swapDuration: 0,
-        swapDate: "",
-        flexibleDates: false
-      };
-
       const saleTerms = {
         downPayment: 0,
         financingAvailable: false,
@@ -393,255 +251,87 @@ describe("PropertyListings", function () {
       };
 
       await smartCribsCore.connect(homeowner).createPropertyListing(
-        0,
+        0, // TransactionType.Rent
         propertyDetails,
         ethers.parseEther("2.5"),
         ethers.ZeroAddress,
         30 * 24 * 60 * 60,
         rentalTerms,
-        swapTerms,
         saleTerms,
         OWNERSHIP_PROOF
       );
-
-      await smartCribsCore.connect(owner).verifyProperty(listingId = 1, true, "Verified");
     });
 
-    it("Should update a property listing", async function () {
-      const updatedPropertyDetails = {
-        location: "123 Main St, New York, NY",
-        size: 1600,
-        bedrooms: 3,
-        bathrooms: 2,
-        propertyType: "Apartment",
-        amenities: "Parking, Gym, Pool, Balcony",
-        yearBuilt: 2020,
-        furnished: true,
-        petsAllowed: true,
-        propertyHash: PROPERTY_HASH
-      };
-
-      const updatedRentalTerms = {
-        minDuration: 60,
-        maxDuration: 365,
-        securityDeposit: ethers.parseEther("3.0"),
-        utilitiesIncluded: true,
-        moveInDate: "2024-02-01"
-      };
-
-      const swapTerms = {
-        desiredLocation: "",
-        minSize: 0,
-        maxSize: 0,
-        swapDuration: 0,
-        swapDate: "",
-        flexibleDates: false
-      };
-
-      const saleTerms = {
-        downPayment: 0,
-        financingAvailable: false,
-        closingDate: "",
-        inspectionRequired: false
-      };
-
-      await smartCribsCore.connect(homeowner).updatePropertyListing(
-        listingId,
-        updatedPropertyDetails,
-        ethers.parseEther("3.0"),
-        ethers.ZeroAddress,
-        updatedRentalTerms,
-        swapTerms,
-        saleTerms
-      );
-
-      const listing = await smartCribsCore.getPropertyListing(listingId);
-      expect(listing.propertyDetails.size).to.equal(1600);
-      expect(listing.propertyDetails.petsAllowed).to.be.true;
-      expect(listing.price).to.equal(ethers.parseEther("3.0"));
+    it("Should get property listing by ID", async function () {
+      const listing = await smartCribsCore.getPropertyListing(1);
+      expect(listing.listingId).to.equal(1);
+      expect(listing.owner).to.equal(homeowner.address);
+      expect(listing.propertyDetails.location).to.equal("123 Main St, New York, NY");
     });
 
-    it("Should delist a property", async function () {
-      await smartCribsCore.connect(homeowner).delistProperty(listingId);
-
-      const listing = await smartCribsCore.getPropertyListing(listingId);
-      expect(listing.status).to.equal(5); // Cancelled
+    it("Should get property listings by owner", async function () {
+      const listings = await smartCribsCore.getPropertyListingsByOwner(homeowner.address);
+      expect(listings.length).to.equal(1);
+      expect(listings[0]).to.equal(1);
     });
 
-    it("Should get listings by owner", async function () {
-      const ownerListings = await smartCribsCore.getPropertyListingsByOwner(homeowner.address);
-      expect(ownerListings.length).to.equal(1);
-      expect(ownerListings[0]).to.equal(listingId);
+    it("Should get total property listings", async function () {
+      const totalListings = await smartCribsCore.getTotalPropertyListings();
+      expect(totalListings).to.equal(1);
     });
 
-    it("Should get listings by type", async function () {
-      const rentalListings = await smartCribsCore.getPropertyListingsByType(0); // Rent
-      expect(rentalListings.length).to.equal(1);
-      expect(rentalListings[0]).to.equal(listingId);
-    });
-
-    it("Should get listings by location", async function () {
-      const locationListings = await smartCribsCore.getPropertyListingsByLocation("123 Main St, New York, NY");
-      expect(locationListings.length).to.equal(1);
-      expect(locationListings[0]).to.equal(listingId);
-    });
-
-    it("Should get active listings", async function () {
-      const activeListings = await smartCribsCore.getActivePropertyListings();
-      expect(activeListings.length).to.equal(1);
-      expect(activeListings[0]).to.equal(listingId);
+    it("Should verify property listing", async function () {
+      await smartCribsCore.connect(owner).verifyProperty(1, true, "Property verified successfully");
+      
+      const listing = await smartCribsCore.getPropertyListing(1);
+      expect(listing.verificationStatus).to.equal(1); // Verified
     });
   });
 
-  describe("Swap Proposals", function () {
-    let listing1Id, listing2Id;
+  describe("User Management", function () {
+    it("Should register user with full name", async function () {
+      const [newUser] = await ethers.getSigners();
+      
+      await smartCribsCore.connect(newUser).registerUser(0, "Alice NewUser", PROFILE_HASH);
+      
+      const profile = await smartCribsCore.getUserProfile(newUser.address);
+      expect(profile.fullName).to.equal("Alice NewUser");
+      expect(profile.role).to.equal(0); // Renter
+      expect(profile.isActive).to.equal(true);
+    });
 
+    it("Should update user role", async function () {
+      await smartCribsCore.connect(renter).updateUserRole(1); // Change to Homeowner
+      
+      const profile = await smartCribsCore.getUserProfile(renter.address);
+      expect(profile.role).to.equal(1); // Homeowner
+    });
+
+    it("Should update user profile", async function () {
+      const newProfileHash = "QmNewProfileHash987654321";
+      await smartCribsCore.connect(renter).updateProfile(newProfileHash);
+      
+      const profile = await smartCribsCore.getUserProfile(renter.address);
+      expect(profile.profileHash).to.equal(newProfileHash);
+    });
+
+    it("Should check if user can list properties", async function () {
+      const canList = await smartCribsCore.canListProperties(homeowner.address);
+      expect(canList).to.equal(true);
+      
+      const cannotList = await smartCribsCore.canListProperties(renter.address);
+      expect(cannotList).to.equal(false);
+    });
+
+    it("Should check if user can rent properties", async function () {
+      const canRent = await smartCribsCore.canRentProperties(renter.address);
+      expect(canRent).to.equal(true);
+    });
+  });
+
+  describe("Review System", function () {
     beforeEach(async function () {
-      // Create two swap listings
-      const propertyDetails1 = {
-        location: "123 Main St, New York, NY",
-        size: 1500,
-        bedrooms: 3,
-        bathrooms: 2,
-        propertyType: "Apartment",
-        amenities: "Parking, Gym, Pool",
-        yearBuilt: 2020,
-        furnished: true,
-        petsAllowed: false,
-        propertyHash: PROPERTY_HASH
-      };
-
-      const propertyDetails2 = {
-        location: "456 Oak Ave, Los Angeles, CA",
-        size: 1800,
-        bedrooms: 2,
-        bathrooms: 2,
-        propertyType: "Condo",
-        amenities: "Beach Access, Pool",
-        yearBuilt: 2018,
-        furnished: true,
-        petsAllowed: true,
-        propertyHash: PROPERTY_HASH
-      };
-
-      const rentalTerms = {
-        minDuration: 0,
-        maxDuration: 0,
-        securityDeposit: 0,
-        utilitiesIncluded: false,
-        moveInDate: ""
-      };
-
-      const swapTerms1 = {
-        desiredLocation: "Los Angeles, CA",
-        minSize: 1500,
-        maxSize: 3000,
-        swapDuration: 30,
-        swapDate: "2024-02-01",
-        flexibleDates: true
-      };
-
-      const swapTerms2 = {
-        desiredLocation: "New York, NY",
-        minSize: 1200,
-        maxSize: 2500,
-        swapDuration: 30,
-        swapDate: "2024-02-01",
-        flexibleDates: true
-      };
-
-      const saleTerms = {
-        downPayment: 0,
-        financingAvailable: false,
-        closingDate: "",
-        inspectionRequired: false
-      };
-
-      // Create first listing
-      await smartCribsCore.connect(homeowner).createPropertyListing(
-        1, // Swap
-        propertyDetails1,
-        0,
-        ethers.ZeroAddress,
-        60 * 24 * 60 * 60,
-        rentalTerms,
-        swapTerms1,
-        saleTerms,
-        OWNERSHIP_PROOF
-      );
-
-      // Create second listing
-      await smartCribsCore.connect(renter).createPropertyListing(
-        1, // Swap
-        propertyDetails2,
-        0,
-        ethers.ZeroAddress,
-        60 * 24 * 60 * 60,
-        rentalTerms,
-        swapTerms2,
-        saleTerms,
-        OWNERSHIP_PROOF
-      );
-
-      // Verify both listings
-      await smartCribsCore.connect(owner).verifyProperty(listing1Id = 1, true, "Verified");
-      await smartCribsCore.connect(owner).verifyProperty(listing2Id = 2, true, "Verified");
-    });
-
-    it("Should create a swap proposal", async function () {
-      const proposedDate = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60; // 30 days from now
-
-      const tx = await smartCribsCore.connect(renter).createSwapProposal(
-        listing1Id,
-        listing2Id,
-        proposedDate
-      );
-
-      const receipt = await tx.wait();
-      expect(receipt.status).to.equal(1);
-    });
-
-    it("Should respond to a swap proposal", async function () {
-      const proposedDate = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
-
-      await smartCribsCore.connect(renter).createSwapProposal(
-        listing1Id,
-        listing2Id,
-        proposedDate
-      );
-
-      // Accept the proposal
-      await smartCribsCore.connect(homeowner).respondToSwapProposal(1, true);
-
-      const proposal = await smartCribsCore.getSwapProposal(1);
-      expect(proposal.accepted).to.be.true;
-      expect(proposal.rejected).to.be.false;
-    });
-
-    it("Should reject a swap proposal", async function () {
-      const proposedDate = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
-
-      await smartCribsCore.connect(renter).createSwapProposal(
-        listing1Id,
-        listing2Id,
-        proposedDate
-      );
-
-      // Reject the proposal
-      await smartCribsCore.connect(homeowner).respondToSwapProposal(1, false);
-
-      const proposal = await smartCribsCore.getSwapProposal(1);
-      expect(proposal.accepted).to.be.false;
-      expect(proposal.rejected).to.be.true;
-    });
-  });
-
-  describe("Platform Statistics", function () {
-    it("Should track total listings correctly", async function () {
-      expect(await smartCribsCore.getTotalPropertyListings()).to.equal(0);
-      expect(await smartCribsCore.getTotalActivePropertyListings()).to.equal(0);
-
-      // Create a listing
+      // Create a test listing first
       const propertyDetails = {
         location: "123 Main St, New York, NY",
         size: 1500,
@@ -663,15 +353,6 @@ describe("PropertyListings", function () {
         moveInDate: "2024-01-01"
       };
 
-      const swapTerms = {
-        desiredLocation: "",
-        minSize: 0,
-        maxSize: 0,
-        swapDuration: 0,
-        swapDate: "",
-        flexibleDates: false
-      };
-
       const saleTerms = {
         downPayment: 0,
         financingAvailable: false,
@@ -680,24 +361,52 @@ describe("PropertyListings", function () {
       };
 
       await smartCribsCore.connect(homeowner).createPropertyListing(
-        0,
+        0, // TransactionType.Rent
         propertyDetails,
         ethers.parseEther("2.5"),
         ethers.ZeroAddress,
         30 * 24 * 60 * 60,
         rentalTerms,
-        swapTerms,
         saleTerms,
         OWNERSHIP_PROOF
       );
+    });
 
-      expect(await smartCribsCore.getTotalPropertyListings()).to.equal(1);
-      expect(await smartCribsCore.getTotalActivePropertyListings()).to.equal(0);
+    it("Should submit a review", async function () {
+      await smartCribsCore.connect(renter).submitReview(
+        homeowner.address,
+        1, // listingId
+        5, // rating
+        "Great property and landlord!"
+      );
 
-      // Verify the listing
-      await smartCribsCore.connect(owner).verifyProperty(1, true, "Verified");
+      const review = await smartCribsCore.getReview(1);
+      expect(review.reviewer).to.equal(renter.address);
+      expect(review.reviewedUser).to.equal(homeowner.address);
+      expect(review.rating).to.equal(5);
+      expect(review.comment).to.equal("Great property and landlord!");
+    });
 
-      expect(await smartCribsCore.getTotalActivePropertyListings()).to.equal(1);
+    it("Should fail to submit review with invalid rating", async function () {
+      await expect(
+        smartCribsCore.connect(renter).submitReview(
+          homeowner.address,
+          1, // listingId
+          6, // Invalid rating (max is 5)
+          "Great property and landlord!"
+        )
+      ).to.be.revertedWith("SmartCribsCore: Invalid rating");
+    });
+
+    it("Should fail to review yourself", async function () {
+      await expect(
+        smartCribsCore.connect(homeowner).submitReview(
+          homeowner.address,
+          1, // listingId
+          5, // rating
+          "Great property and landlord!"
+        )
+      ).to.be.revertedWith("SmartCribsCore: Cannot review yourself");
     });
   });
 }); 

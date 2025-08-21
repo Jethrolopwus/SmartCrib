@@ -47,7 +47,7 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              href="/properties"
+              href="/pagedetails"
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
@@ -63,7 +63,7 @@ const Navbar = () => {
               About
             </Link>
             <Link
-              href="/contact"
+              href="/reviewform"
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
@@ -82,6 +82,7 @@ const Navbar = () => {
 
           {/* Desktop Action Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+
             <Link href="/listingform">
               <button
                 className="px-6 py-2 rounded-lg font-medium transition-colors"
@@ -93,6 +94,18 @@ const Navbar = () => {
               </button>
             </Link>
             <div className="flex items-center">
+
+            <button
+              className="px-8 py-2 rounded-lg font-medium transition-colors border"
+              style={{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                borderColor: "#000000",
+              }}
+            >
+              Add Property
+            </button>
+            <div className="flex  items-center">
               <ConnectWallet />
             </div>
             {/* Theme Toggle Button */}
@@ -236,7 +249,7 @@ const Navbar = () => {
                 About
               </Link>
               <Link
-                href="/contact"
+                href="/reviewform"
                 className="block px-3 py-2 font-medium  text-sm"
                 style={{
                   color: theme === "dark" ? "#ffffff" : "#000000",
@@ -253,11 +266,15 @@ const Navbar = () => {
               </Link>
               <div className="pt-4 space-y-2">
                 <button
-                  className="w-full px-6 py-2 rounded-lg font-medium transition-colors"
+                  className="w-full px-6 py-2 rounded-lg font-medium transition-colors border"
                   style={{
-                    backgroundColor: theme === "dark" ? "#ffffff" : "#000000",
-                    color: theme === "dark" ? "#000000" : "#ffffff",
-                  }}>
+
+                    backgroundColor: "#ffffff",
+                    color: "#000000",
+                    borderColor: "#000000",
+                  }}
+                >
+
                   Add Property
                 </button>
                 <div className="w-full">

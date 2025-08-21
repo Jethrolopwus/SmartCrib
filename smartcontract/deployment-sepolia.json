@@ -1,0 +1,18 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployer": "0x062189AFd7220eEC9995E0B628D7Ccc217687329",
+  "contracts": {
+    "SmartCribsCore": "0x4638F1Fc09FCCa11Ad65d142f93Cf60C46014d47",
+    "UserRegistry": "0xd6bD094929a18a2145e6Ea808060De488AeB8c12",
+    "PropertyListings": "0x82A3B1D1F4e1b2Eb3d5FcC20501e9aF3f36e698B",
+    "Reviews": "0xfc837De59ECFF67741eCa803F5cD2F83BD6ac893"
+  },
+  "deploymentTime": "2025-08-20T11:26:12.438Z",
+  "etherscanUrls": {
+    "SmartCribsCore": "https://sepolia.etherscan.io/address/0x4638F1Fc09FCCa11Ad65d142f93Cf60C46014d47",
+    "UserRegistry": "https://sepolia.etherscan.io/address/0xd6bD094929a18a2145e6Ea808060De488AeB8c12",
+    "PropertyListings": "https://sepolia.etherscan.io/address/0x82A3B1D1F4e1b2Eb3d5FcC20501e9aF3f36e698B",
+    "Reviews": "https://sepolia.etherscan.io/address/0xfc837De59ECFF67741eCa803F5cD2F83BD6ac893"
+  }
+}
