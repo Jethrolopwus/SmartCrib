@@ -19,8 +19,7 @@ const Navbar = () => {
             : "rgba(255, 255, 255, 0.95)",
         borderBottom:
           theme === "dark" ? "1px solid #374151" : "1px solid #f3f4f6",
-      }}
-    >
+      }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -31,8 +30,7 @@ const Navbar = () => {
               </div>
               <span
                 className="text-xl font-bold"
-                style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}
-              >
+                style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}>
                 SmartCribs
               </span>
             </Link>
@@ -45,8 +43,7 @@ const Navbar = () => {
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
-              }}
-            >
+              }}>
               Home
             </Link>
             <Link
@@ -54,8 +51,7 @@ const Navbar = () => {
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
-              }}
-            >
+              }}>
               Properties
             </Link>
             <Link
@@ -63,8 +59,7 @@ const Navbar = () => {
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
-              }}
-            >
+              }}>
               About
             </Link>
             <Link
@@ -72,8 +67,7 @@ const Navbar = () => {
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
-              }}
-            >
+              }}>
               Contact
             </Link>
             <Link
@@ -81,23 +75,23 @@ const Navbar = () => {
               className="font-medium  text-sm tracking-wide transition-colors hover:text-blue-600"
               style={{
                 color: theme === "dark" ? "#ffffff" : "#000000",
-              }}
-            >
+              }}>
               Blog
             </Link>
           </div>
 
           {/* Desktop Action Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <button
-              className="px-6 py-2 rounded-lg font-medium transition-colors"
-              style={{
-                backgroundColor: theme === "dark" ? "#ffffff" : "#000000",
-                color: theme === "dark" ? "#000000" : "#ffffff",
-              }}
-            >
-              Add Property
-            </button>
+            <Link href="/listingform">
+              <button
+                className="px-6 py-2 rounded-lg font-medium transition-colors"
+                style={{
+                  backgroundColor: theme === "dark" ? "#ffffff" : "#000000",
+                  color: theme === "dark" ? "#000000" : "#ffffff",
+                }}>
+                Add Property
+              </button>
+            </Link>
             <div className="flex items-center">
               <ConnectWallet />
             </div>
@@ -109,15 +103,13 @@ const Navbar = () => {
                 backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6",
                 color: theme === "dark" ? "#ffffff" : "#000000",
               }}
-              aria-label="Toggle theme"
-            >
+              aria-label="Toggle theme">
               {theme === "light" ? (
                 <svg
                   className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                  viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -130,8 +122,7 @@ const Navbar = () => {
                   className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                  viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -153,15 +144,13 @@ const Navbar = () => {
                 backgroundColor: theme === "dark" ? "#374151" : "#f3f4f6",
                 color: theme === "dark" ? "#ffffff" : "#000000",
               }}
-              aria-label="Toggle theme"
-            >
+              aria-label="Toggle theme">
               {theme === "light" ? (
                 <svg
                   className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                  viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -174,8 +163,7 @@ const Navbar = () => {
                   className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                  viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -188,14 +176,12 @@ const Navbar = () => {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="focus:outline-none"
-              style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}
-            >
+              style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}>
               <svg
                 className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 {isMenuOpen ? (
                   <path
                     strokeLinecap="round"
@@ -224,15 +210,13 @@ const Navbar = () => {
               style={{
                 backgroundColor: theme === "dark" ? "#111827" : "#ffffff",
                 borderColor: theme === "dark" ? "#374151" : "#f3f4f6",
-              }}
-            >
+              }}>
               <Link
                 href="/"
                 className="block px-3 py-2 font-medium  text-sm"
                 style={{
                   color: theme === "dark" ? "#ffffff" : "#000000",
-                }}
-              >
+                }}>
                 Home
               </Link>
               <Link
@@ -240,8 +224,7 @@ const Navbar = () => {
                 className="block px-3 py-2 font-medium  text-sm"
                 style={{
                   color: theme === "dark" ? "#ffffff" : "#000000",
-                }}
-              >
+                }}>
                 Properties
               </Link>
               <Link
@@ -249,8 +232,7 @@ const Navbar = () => {
                 className="block px-3 py-2 font-medium  text-sm"
                 style={{
                   color: theme === "dark" ? "#ffffff" : "#000000",
-                }}
-              >
+                }}>
                 About
               </Link>
               <Link
@@ -258,8 +240,7 @@ const Navbar = () => {
                 className="block px-3 py-2 font-medium  text-sm"
                 style={{
                   color: theme === "dark" ? "#ffffff" : "#000000",
-                }}
-              >
+                }}>
                 Contact
               </Link>
               <Link
@@ -267,8 +248,7 @@ const Navbar = () => {
                 className="block px-3 py-2 font-medium  text-sm"
                 style={{
                   color: theme === "dark" ? "#ffffff" : "#000000",
-                }}
-              >
+                }}>
                 Blog
               </Link>
               <div className="pt-4 space-y-2">
@@ -277,8 +257,7 @@ const Navbar = () => {
                   style={{
                     backgroundColor: theme === "dark" ? "#ffffff" : "#000000",
                     color: theme === "dark" ? "#000000" : "#ffffff",
-                  }}
-                >
+                  }}>
                   Add Property
                 </button>
                 <div className="w-full">
