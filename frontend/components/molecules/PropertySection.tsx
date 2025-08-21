@@ -20,6 +20,7 @@ const PropertySection = () => {
     formState: { errors },
     handleSubmit,
     watch,
+    setValue,
   } = useFormContext<ListingData>();
 
   const onSubmit = (data: ListingData) => {
@@ -49,14 +50,45 @@ const PropertySection = () => {
     setMounted(true);
   }, []);
 
+  // Set default values to match smart contract requirements
+  useEffect(() => {
+    if (mounted) {
+      setValue("transactionType", 2);
+      setValue("propertyType", "rent");
+      setValue("listingType", "rent");
+      setValue("bedrooms", 1);
+      setValue("bathrooms", 1);
+      setValue("area", 2);
+      setValue("price", 2);
+      setValue("yearBuilt", 2009);
+      setValue("furnished", true);
+      setValue("petsAllowed", true);
+      setValue("propertyHash", "cool");
+      setValue("paymentTokenAddress", "0x062189AFd7220eEC9995E0B628D7Ccc217687329");
+      setValue("ownershipProof", "yes");
+      setValue("address", "yes");
+      setValue("rentalTerms.minDuration", 1);
+      setValue("rentalTerms.maxDuration", 3);
+      setValue("rentalTerms.securityDeposit", 2);
+      setValue("rentalTerms.utilitiesIncluded", true);
+      setValue("rentalTerms.moveInDate", "2000");
+      setValue("saleTerms.downpayment", 1);
+      setValue("saleTerms.financingAvailable", true);
+      setValue("saleTerms.closingDate", "2020");
+      setValue("saleTerms.inspectionRequired", true);
+      setValue("amenities.dishwasher", true);
+    }
+  }, [mounted, setValue]);
+
   if (!mounted) return null;
 
   const ErrorMessage = ({ field }: { field?: { message?: string } }) =>
     field ? <p className="text-red-500 text-xs mt-1">{field.message}</p> : null;
 
-  const inputClassStyles = ` p-4 focus:outline border border-zinc-300  text-stone-500 w-full rounded-2xl outline-none bg-zinc-200`;
+  const inputClassStyles = `p-4 focus:outline border border-zinc-300 text-stone-500 w-full rounded-2xl outline-none bg-zinc-200`;
   const labelTextStyles = `lg:text-xl font-light text-stone-700 text-lg`;
-  const textAreaInputStyles = `h-56 rounded-2xl border border-zinc-300 w-full p-5 outline-none `;
+  const textAreaInputStyles = `h-56 rounded-2xl border border-zinc-300 w-full p-5 outline-none`;
+  
   return (
     <>
       {/* Property Section */}
@@ -164,11 +196,12 @@ const PropertySection = () => {
             <ErrorMessage field={errors.bathrooms} />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:space-x-4">
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="area" className={labelTextStyles}>
-                Area
-              </label>
+          {/* Improved Area and Area Unit Section */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="area" className={labelTextStyles}>
+              Area
+            </label>
+            <div className="flex gap-2">
               <input
                 type="number"
                 id="area"
@@ -178,29 +211,25 @@ const PropertySection = () => {
                   valueAsNumber: true,
                 })}
                 placeholder="e.g., 1500"
-                className={inputClassStyles}
+                className={`${inputClassStyles} flex-1`}
               />
-              <ErrorMessage field={errors.area} />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className={labelTextStyles} htmlFor="areaUnit">
-                Area Unit
-              </label>
               <select
                 id="areaUnit"
                 {...register("areaUnit")}
-                className={inputClassStyles}>
+                className={`${inputClassStyles} w-24 min-w-24`}>
                 <option value="sqft">Sq Ft</option>
                 <option value="sqm">Sq M</option>
               </select>
             </div>
+            <ErrorMessage field={errors.area} />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:space-x-4">
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="price" className={labelTextStyles}>
-                Price
-              </label>
+          {/* Improved Price and Currency Section */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="price" className={labelTextStyles}>
+              Price
+            </label>
+            <div className="flex gap-2">
               <input
                 type="number"
                 id="price"
@@ -212,19 +241,13 @@ const PropertySection = () => {
                   },
                   valueAsNumber: true,
                 })}
-                className={inputClassStyles}
+                className={`${inputClassStyles} flex-1`}
                 placeholder="e.g., 250000"
               />
-              <ErrorMessage field={errors.price} />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className={labelTextStyles} htmlFor="currency">
-                Currency
-              </label>
               <select
                 id="currency"
                 {...register("currency")}
-                className={inputClassStyles}>
+                className={`${inputClassStyles} w-20 min-w-20`}>
                 <option value="USD">USD</option>
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
@@ -233,6 +256,7 @@ const PropertySection = () => {
                 <option value="AUD">AUD</option>
               </select>
             </div>
+            <ErrorMessage field={errors.price} />
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -327,70 +351,73 @@ const PropertySection = () => {
             <ErrorMessage field={errors.ownershipProof} />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className={labelTextStyles}>Listing Type</label>
-            <div className="flex flex-col lg:flex-row text-base  w-full gap-4 mt-1 lg:text-lg">
-              <label className={`${labelTextStyles} flex  items-center`}>
+          {/* Improved Listing Type Section */}
+          <div className="md:col-span-2">
+            <label className={`${labelTextStyles} block mb-3`}>Listing Type</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <label className="flex items-center p-3 border border-zinc-300 rounded-xl bg-zinc-200 hover:bg-zinc-100 transition-colors cursor-pointer">
                 <input
                   type="radio"
                   value="sale"
                   {...register("listingType", {
                     required: "Listing type is required",
                   })}
-                  className="form-radio text-blue-600 w-fit h-fit"
+                  className="form-radio text-blue-600 w-4 h-4 mr-3"
                 />
-                <span className="ml-2 text-gray-700 text-nowrap">For Sale</span>
+                <span className="text-gray-700 font-medium">For Sale</span>
               </label>
-              <label className={`${labelTextStyles} flex items-center`}>
+              <label className="flex items-center p-3 border border-zinc-300 rounded-xl bg-zinc-200 hover:bg-zinc-100 transition-colors cursor-pointer">
                 <input
                   type="radio"
                   value="rent"
                   {...register("listingType", {
                     required: "Listing type is required",
                   })}
-                  className="form-radio text-blue-600 w-fit h-fit"
+                  className="form-radio text-blue-600 w-4 h-4 mr-3"
                 />
-                <span className="ml-2 text-gray-700 text-nowrap">For Rent</span>
+                <span className="text-gray-700 font-medium">For Rent</span>
               </label>
-              <label className={`${labelTextStyles} flex items-center`}>
+              <label className="flex items-center p-3 border border-zinc-300 rounded-xl bg-zinc-200 hover:bg-zinc-100 transition-colors cursor-pointer">
                 <input
                   type="radio"
                   value="swap"
                   {...register("listingType", {
                     required: "Listing type is required",
                   })}
-                  className="form-radio text-blue-600 w-fit h-fit"
+                  className="form-radio text-blue-600 w-4 h-4 mr-3"
                 />
-                <span className="ml-2 text-gray-700 text-nowrap">For Swap</span>
+                <span className="text-gray-700 font-medium">For Swap</span>
               </label>
             </div>
             <ErrorMessage field={errors.listingType} />
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:space-x-4 gap-5 lg:gap-10">
-            <div className="flex flex-col sm:flex-row sm:space-x-4">
-              <div className="flex items-center gap-x-2">
-                <label htmlFor="petsAllowed" className={labelTextStyles}>
-                  Pets Allowed
-                </label>
+          {/* Improved Pets and Furnished Section */}
+          <div className="md:col-span-2">
+            <label className={`${labelTextStyles} block mb-3`}>Property Features</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="flex items-center p-4 border border-zinc-300 rounded-xl bg-zinc-200 hover:bg-zinc-100 transition-colors cursor-pointer">
                 <input
                   type="checkbox"
-                  placeholder="petsAllowed"
                   {...register("petsAllowed")}
+                  className="form-checkbox text-blue-600 w-5 h-5 mr-3"
                 />
-                <ErrorMessage field={errors.petsAllowed} />
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <label htmlFor="furnished" className={labelTextStyles}>
-                Furnished
+                <div>
+                  <span className="text-gray-700 font-medium block">Pets Allowed</span>
+                  <span className="text-gray-500 text-sm">Pet-friendly property</span>
+                </div>
               </label>
-              <input
-                type="checkbox"
-                placeholder="furnished"
-                {...register("furnished")}
-              />
-              <ErrorMessage field={errors.furnished} />
+              <label className="flex items-center p-4 border border-zinc-300 rounded-xl bg-zinc-200 hover:bg-zinc-100 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  {...register("furnished")}
+                  className="form-checkbox text-blue-600 w-5 h-5 mr-3"
+                />
+                <div>
+                  <span className="text-gray-700 font-medium block">Furnished</span>
+                  <span className="text-gray-500 text-sm">Fully furnished property</span>
+                </div>
+              </label>
             </div>
           </div>
         </div>

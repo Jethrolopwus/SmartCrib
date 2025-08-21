@@ -82,30 +82,19 @@ const Navbar = () => {
 
           {/* Desktop Action Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-
             <Link href="/listingform">
               <button
-                className="px-6 py-2 rounded-lg font-medium transition-colors"
+                className="px-8 py-2 rounded-lg font-medium transition-colors border"
                 style={{
-                  backgroundColor: theme === "dark" ? "#ffffff" : "#000000",
-                  color: theme === "dark" ? "#000000" : "#ffffff",
-                }}>
+                  backgroundColor: "#ffffff",
+                  color: "#000000",
+                  borderColor: "#000000",
+                }}
+              >
                 Add Property
               </button>
             </Link>
             <div className="flex items-center">
-
-            <button
-              className="px-8 py-2 rounded-lg font-medium transition-colors border"
-              style={{
-                backgroundColor: "#ffffff",
-                color: "#000000",
-                borderColor: "#000000",
-              }}
-            >
-              Add Property
-            </button>
-            <div className="flex  items-center">
               <ConnectWallet />
             </div>
             {/* Theme Toggle Button */}
@@ -264,19 +253,20 @@ const Navbar = () => {
                 }}>
                 Blog
               </Link>
+              
               <div className="pt-4 space-y-2">
-                <button
-                  className="w-full px-6 py-2 rounded-lg font-medium transition-colors border"
-                  style={{
-
-                    backgroundColor: "#ffffff",
-                    color: "#000000",
-                    borderColor: "#000000",
-                  }}
-                >
-
-                  Add Property
-                </button>
+                <Link href="/listingform">
+                  <button
+                    className="w-full px-6 py-2 rounded-lg font-medium transition-colors border"
+                    style={{
+                      backgroundColor: "#ffffff",
+                      color: "#000000",
+                      borderColor: "#000000",
+                    }}
+                  >
+                    Add Property
+                  </button>
+                </Link>
                 <div className="w-full">
                   <ConnectWallet />
                 </div>

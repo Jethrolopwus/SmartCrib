@@ -59,7 +59,7 @@ const PropertyShowcase = () => {
           </p>
         </div>
         <Link href="/pagedetails" className='flex justify-end mb-4'>
-          <button className="px-6 py-3 mt-8 rounded-lg bg-blue-600 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-white/20">
+          <button className="px-6 py-3 mt-8 rounded-lg bg-blue-700 text-white font-semibold shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-white/20">
             See More →
           </button>
         </Link>
@@ -92,7 +92,7 @@ const PropertyShowcase = () => {
                   <span className="text-2xl font-bold" style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
                     {property.price}
                   </span>
-                  <button onClick={() => handleViewDetails(property.id)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  <button onClick={() => handleViewDetails(property.id)} className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                       View Details
                   </button>
                 </div>
