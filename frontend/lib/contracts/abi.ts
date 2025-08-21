@@ -1,66 +1,1673 @@
 // SmartCribsCore Contract ABI
 export const SMART_CRIBS_CORE_ABI = [
-  {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
-  {"inputs":[],"name":"EnforcedPause","type":"error"},
-  {"inputs":[],"name":"ExpectedPause","type":"error"},
-  {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},
-  {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},
-  {"inputs":[],"name":"ReentrancyGuardReentrantCall","type":"error"},
-  {"inputs":[{"internalType":"address","name":"token","type":"address"}],"name":"SafeERC20FailedOperation","type":"error"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"FeeCollected","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newFee","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"FeeUpdated","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Paused","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"PlatformInitialized","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"profileHash","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"ProfileUpdated","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"listingId","type":"uint256"},{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"enum SmartCribsCore.TransactionType","name":"transactionType","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"PropertyListed","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"listingId","type":"uint256"},{"indexed":false,"internalType":"bool","name":"verified","type":"bool"},{"indexed":false,"internalType":"string","name":"reason","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"PropertyVerified","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"reviewId","type":"uint256"},{"indexed":true,"internalType":"address","name":"reviewer","type":"address"},{"indexed":true,"internalType":"address","name":"reviewedUser","type":"address"},{"indexed":false,"internalType":"uint256","name":"rating","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"ReviewSubmitted","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":false,"internalType":"bool","name":"supported","type":"bool"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"TokenSupported","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Unpaused","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"enum SmartCribsCore.UserRole","name":"role","type":"uint8"},{"indexed":false,"internalType":"string","name":"fullName","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"UserRegistered","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"enum SmartCribsCore.UserRole","name":"newRole","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"UserRoleUpdated","type":"event"},
-  {"inputs":[],"name":"FEE_DENOMINATOR","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"MAX_FEE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"MAX_RATING","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"NATIVE_TOKEN","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"token","type":"address"}],"name":"addSupportedToken","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"canListProperties","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"canRentProperties","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"enum SmartCribsCore.TransactionType","name":"transactionType","type":"uint8"},{"components":[{"internalType":"string","name":"location","type":"string"},{"internalType":"uint256","name":"size","type":"uint256"},{"internalType":"uint256","name":"bedrooms","type":"uint256"},{"internalType":"uint256","name":"bathrooms","type":"uint256"},{"internalType":"string","name":"propertyType","type":"string"},{"internalType":"string","name":"amenities","type":"string"},{"internalType":"uint256","name":"yearBuilt","type":"uint256"},{"internalType":"bool","name":"furnished","type":"bool"},{"internalType":"bool","name":"petsAllowed","type":"bool"},{"internalType":"string","name":"propertyHash","type":"string"}],"internalType":"struct SmartCribsCore.PropertyDetails","name":"propertyDetails","type":"tuple"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"address","name":"paymentToken","type":"address"},{"internalType":"uint256","name":"duration","type":"uint256"},{"components":[{"internalType":"uint256","name":"minDuration","type":"uint256"},{"internalType":"uint256","name":"maxDuration","type":"uint256"},{"internalType":"uint256","name":"securityDeposit","type":"uint256"},{"internalType":"bool","name":"utilitiesIncluded","type":"bool"},{"internalType":"string","name":"moveInDate","type":"string"}],"internalType":"struct SmartCribsCore.RentalTerms","name":"rentalTerms","type":"tuple"},{"components":[{"internalType":"uint256","name":"downPayment","type":"uint256"},{"internalType":"bool","name":"financingAvailable","type":"bool"},{"internalType":"string","name":"closingDate","type":"string"},{"internalType":"bool","name":"inspectionRequired","type":"bool"}],"internalType":"struct SmartCribsCore.SaleTerms","name":"saleTerms","type":"tuple"},{"internalType":"string","name":"ownershipProof","type":"string"}],"name":"createPropertyListing","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"getPlatformStats","outputs":[{"components":[{"internalType":"uint256","name":"totalUsers","type":"uint256"},{"internalType":"uint256","name":"totalListings","type":"uint256"},{"internalType":"uint256","name":"totalTransactions","type":"uint256"},{"internalType":"uint256","name":"totalRevenue","type":"uint256"}],"internalType":"struct SmartCribsCore.PlatformStats","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"uint256","name":"listingId","type":"uint256"}],"name":"getPropertyListing","outputs":[{"components":[{"internalType":"uint256","name":"listingId","type":"uint256"},{"internalType":"address","name":"owner","type":"address"},{"internalType":"enum SmartCribsCore.TransactionType","name":"transactionType","type":"uint8"},{"components":[{"internalType":"string","name":"location","type":"string"},{"internalType":"uint256","name":"size","type":"uint256"},{"internalType":"uint256","name":"bedrooms","type":"uint256"},{"internalType":"uint256","name":"bathrooms","type":"uint256"},{"internalType":"string","name":"propertyType","type":"string"},{"internalType":"string","name":"amenities","type":"string"},{"internalType":"uint256","name":"yearBuilt","type":"uint256"},{"internalType":"bool","name":"furnished","type":"bool"},{"internalType":"bool","name":"petsAllowed","type":"bool"},{"internalType":"string","name":"propertyHash","type":"string"}],"internalType":"struct SmartCribsCore.PropertyDetails","name":"propertyDetails","type":"tuple"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"address","name":"paymentToken","type":"address"},{"internalType":"uint256","name":"duration","type":"uint256"},{"components":[{"internalType":"uint256","name":"minDuration","type":"uint256"},{"internalType":"uint256","name":"maxDuration","type":"uint256"},{"internalType":"uint256","name":"securityDeposit","type":"uint256"},{"internalType":"bool","name":"utilitiesIncluded","type":"bool"},{"internalType":"string","name":"moveInDate","type":"string"}],"internalType":"struct SmartCribsCore.RentalTerms","name":"rentalTerms","type":"tuple"},{"components":[{"internalType":"uint256","name":"downPayment","type":"uint256"},{"internalType":"bool","name":"financingAvailable","type":"bool"},{"internalType":"string","name":"closingDate","type":"string"},{"internalType":"bool","name":"inspectionRequired","type":"bool"}],"internalType":"struct SmartCribsCore.SaleTerms","name":"saleTerms","type":"tuple"},{"internalType":"string","name":"ownershipProof","type":"string"},{"internalType":"enum SmartCribsCore.ListingStatus","name":"status","type":"uint8"},{"internalType":"enum SmartCribsCore.VerificationStatus","name":"verificationStatus","type":"uint8"},{"internalType":"uint256","name":"views","type":"uint256"},{"internalType":"uint256","name":"inquiries","type":"uint256"},{"internalType":"uint256","name":"createdAt","type":"uint256"}],"internalType":"struct SmartCribsCore.PropertyListing","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"getPropertyListingsByOwner","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"uint256","name":"reviewId","type":"uint256"}],"name":"getReview","outputs":[{"components":[{"internalType":"uint256","name":"reviewId","type":"uint256"},{"internalType":"address","name":"reviewer","type":"address"},{"internalType":"address","name":"reviewedUser","type":"address"},{"internalType":"uint256","name":"listingId","type":"uint256"},{"internalType":"uint256","name":"rating","type":"uint256"},{"internalType":"string","name":"comment","type":"string"},{"internalType":"uint256","name":"createdAt","type":"uint256"}],"internalType":"struct SmartCribsCore.Review","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"getTotalActivePropertyListings","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"getTotalPropertyListings","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserProfile","outputs":[{"components":[{"internalType":"enum SmartCribsCore.UserRole","name":"role","type":"uint8"},{"internalType":"string","name":"fullName","type":"string"},{"internalType":"string","name":"profileHash","type":"string"},{"internalType":"uint256","name":"reputationScore","type":"uint256"},{"internalType":"uint256","name":"totalTransactions","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct SmartCribsCore.UserProfile","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserReviews","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"isUserRegistered","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"nextListingId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"nextReviewId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"platformFee","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"platformStats","outputs":[{"internalType":"uint256","name":"totalUsers","type":"uint256"},{"internalType":"uint256","name":"totalListings","type":"uint256"},{"internalType":"uint256","name":"totalTransactions","type":"uint256"},{"internalType":"uint256","name":"totalRevenue","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"propertyListings","outputs":[{"components":[{"internalType":"uint256","name":"listingId","type":"uint256"},{"internalType":"address","name":"owner","type":"address"},{"internalType":"enum SmartCribsCore.TransactionType","name":"transactionType","type":"uint8"},{"components":[{"internalType":"string","name":"location","type":"string"},{"internalType":"uint256","name":"size","type":"uint256"},{"internalType":"uint256","name":"bedrooms","type":"uint256"},{"internalType":"uint256","name":"bathrooms","type":"uint256"},{"internalType":"string","name":"propertyType","type":"string"},{"internalType":"string","name":"amenities","type":"string"},{"internalType":"uint256","name":"yearBuilt","type":"uint256"},{"internalType":"bool","name":"furnished","type":"bool"},{"internalType":"bool","name":"petsAllowed","type":"bool"},{"internalType":"string","name":"propertyHash","type":"string"}],"internalType":"struct SmartCribsCore.PropertyDetails","name":"propertyDetails","type":"tuple"},{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"address","name":"paymentToken","type":"address"},{"internalType":"uint256","name":"duration","type":"uint256"},{"components":[{"internalType":"uint256","name":"minDuration","type":"uint256"},{"internalType":"uint256","name":"maxDuration","type":"uint256"},{"internalType":"uint256","name":"securityDeposit","type":"uint256"},{"internalType":"bool","name":"utilitiesIncluded","type":"bool"},{"internalType":"string","name":"moveInDate","type":"string"}],"internalType":"struct SmartCribsCore.RentalTerms","name":"rentalTerms","type":"tuple"},{"components":[{"internalType":"uint256","name":"downPayment","type":"uint256"},{"internalType":"bool","name":"financingAvailable","type":"bool"},{"internalType":"string","name":"closingDate","type":"string"},{"internalType":"bool","name":"inspectionRequired","type":"bool"}],"internalType":"struct SmartCribsCore.SaleTerms","name":"saleTerms","type":"tuple"},{"internalType":"string","name":"ownershipProof","type":"string"},{"internalType":"enum SmartCribsCore.ListingStatus","name":"status","type":"uint8"},{"internalType":"enum SmartCribsCore.VerificationStatus","name":"verificationStatus","type":"uint8"},{"internalType":"uint256","name":"views","type":"uint256"},{"internalType":"uint256","name":"inquiries","type":"uint256"},{"internalType":"uint256","name":"createdAt","type":"uint256"}],"internalType":"struct SmartCribsCore.PropertyListing","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"enum SmartCribsCore.UserRole","name":"role","type":"uint8"},{"internalType":"string","name":"fullName","type":"string"},{"internalType":"string","name":"profileHash","type":"string"}],"name":"registerUser","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"address","name":"token","type":"address"}],"name":"removeSupportedToken","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"reviews","outputs":[{"components":[{"internalType":"uint256","name":"reviewId","type":"uint256"},{"internalType":"address","name":"reviewer","type":"address"},{"internalType":"address","name":"reviewedUser","type":"address"},{"internalType":"uint256","name":"listingId","type":"uint256"},{"internalType":"uint256","name":"rating","type":"uint256"},{"internalType":"string","name":"comment","type":"string"},{"internalType":"uint256","name":"createdAt","type":"uint256"}],"internalType":"struct SmartCribsCore.Review","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"reviewedUser","type":"address"},{"internalType":"uint256","name":"listingId","type":"uint256"},{"internalType":"uint256","name":"rating","type":"uint256"},{"internalType":"string","name":"comment","type":"string"}],"name":"submitReview","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"supportedTokens","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"uint256","name":"newFee","type":"uint256"}],"name":"updatePlatformFee","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"string","name":"profileHash","type":"string"}],"name":"updateProfile","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"enum SmartCribsCore.UserRole","name":"newRole","type":"uint8"}],"name":"updateUserRole","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"userListings","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userProfiles","outputs":[{"components":[{"internalType":"enum SmartCribsCore.UserRole","name":"role","type":"uint8"},{"internalType":"string","name":"fullName","type":"string"},{"internalType":"string","name":"profileHash","type":"string"},{"internalType":"uint256","name":"reputationScore","type":"uint256"},{"internalType":"uint256","name":"totalTransactions","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct SmartCribsCore.UserProfile","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"userReviews","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"uint256","name":"listingId","type":"uint256"},{"internalType":"bool","name":"verified","type":"bool"},{"internalType":"string","name":"reason","type":"string"}],"name":"verifyProperty","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"withdrawFees","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"address","name":"token","type":"address"}],"name":"withdrawTokenFees","outputs":[],"stateMutability":"nonpayable","type":"function"}
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "EnforcedPause",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ExpectedPause",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "FeeCollected",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "FeeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Paused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "PlatformInitialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "profileHash",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "ProfileUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum SmartCribsCore.TransactionType",
+        "name": "transactionType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "PropertyListed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "verified",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "PropertyVerified",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "reviewer",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "reviewedUser",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "rating",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReviewSubmitted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "supported",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "TokenSupported",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Unpaused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum SmartCribsCore.UserRole",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "fullName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "UserRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum SmartCribsCore.UserRole",
+        "name": "newRole",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "UserRoleUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "FEE_DENOMINATOR",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_FEE",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_RATING",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "NATIVE_TOKEN",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "addSupportedToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "canListProperties",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "canRentProperties",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum SmartCribsCore.TransactionType",
+        "name": "transactionType",
+        "type": "uint8"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "location",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "size",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bedrooms",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bathrooms",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "propertyType",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "amenities",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yearBuilt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "furnished",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "petsAllowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "propertyHash",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.PropertyDetails",
+        "name": "propertyDetails",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "paymentToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "minDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "securityDeposit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "utilitiesIncluded",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "moveInDate",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.RentalTerms",
+        "name": "rentalTerms",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "downPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "financingAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "closingDate",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "inspectionRequired",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.SaleTerms",
+        "name": "saleTerms",
+        "type": "tuple"
+      },
+      {
+        "internalType": "string",
+        "name": "ownershipProof",
+        "type": "string"
+      }
+    ],
+    "name": "createPropertyListing",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "emergencyWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPlatformStats",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalUsers",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalListings",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalTransactions",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalRevenue",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.PlatformStats",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPropertyListing",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "listingId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "enum SmartCribsCore.TransactionType",
+            "name": "transactionType",
+            "type": "uint8"
+          },
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "location",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "size",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "bedrooms",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "bathrooms",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "propertyType",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "amenities",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "yearBuilt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "furnished",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "petsAllowed",
+                "type": "bool"
+              },
+              {
+                "internalType": "string",
+                "name": "propertyHash",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct SmartCribsCore.PropertyDetails",
+            "name": "propertyDetails",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "paymentToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "duration",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "minDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "securityDeposit",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "utilitiesIncluded",
+                "type": "bool"
+              },
+              {
+                "internalType": "string",
+                "name": "moveInDate",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct SmartCribsCore.RentalTerms",
+            "name": "rentalTerms",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "downPayment",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "financingAvailable",
+                "type": "bool"
+              },
+              {
+                "internalType": "string",
+                "name": "closingDate",
+                "type": "string"
+              },
+              {
+                "internalType": "bool",
+                "name": "inspectionRequired",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct SmartCribsCore.SaleTerms",
+            "name": "saleTerms",
+            "type": "tuple"
+          },
+          {
+            "internalType": "string",
+            "name": "ownershipProof",
+            "type": "string"
+          },
+          {
+            "internalType": "enum SmartCribsCore.ListingStatus",
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum SmartCribsCore.VerificationStatus",
+            "name": "verificationStatus",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "views",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inquiries",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.PropertyListing",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "getPropertyListingsByOwner",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getReview",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "reviewId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "reviewer",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "reviewedUser",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "listingId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rating",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "comment",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.Review",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTotalActivePropertyListings",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTotalPropertyListings",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserProfile",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum SmartCribsCore.UserRole",
+            "name": "role",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "fullName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "profileHash",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reputationScore",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalTransactions",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.UserProfile",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserReviews",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "isUserRegistered",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextListingId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextReviewId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paused",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "platformFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "platformStats",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalUsers",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalListings",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalTransactions",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalRevenue",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "propertyListings",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "enum SmartCribsCore.TransactionType",
+        "name": "transactionType",
+        "type": "uint8"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "location",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "size",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bedrooms",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bathrooms",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "propertyType",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "amenities",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "yearBuilt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "furnished",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "petsAllowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "propertyHash",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.PropertyDetails",
+        "name": "propertyDetails",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "paymentToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "minDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "securityDeposit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "utilitiesIncluded",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "moveInDate",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.RentalTerms",
+        "name": "rentalTerms",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "downPayment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "financingAvailable",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "closingDate",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "inspectionRequired",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct SmartCribsCore.SaleTerms",
+        "name": "saleTerms",
+        "type": "tuple"
+      },
+      {
+        "internalType": "string",
+        "name": "ownershipProof",
+        "type": "string"
+      },
+      {
+        "internalType": "enum SmartCribsCore.ListingStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum SmartCribsCore.VerificationStatus",
+        "name": "verificationStatus",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "views",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "inquiries",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "createdAt",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum SmartCribsCore.UserRole",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "internalType": "string",
+        "name": "fullName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "profileHash",
+        "type": "string"
+      }
+    ],
+    "name": "registerUser",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "removeSupportedToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "reviews",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "reviewer",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "reviewedUser",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rating",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "comment",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "createdAt",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "reviewedUser",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rating",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "comment",
+        "type": "string"
+      }
+    ],
+    "name": "submitReview",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "supportedTokens",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "unpause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "updatePlatformFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "profileHash",
+        "type": "string"
+      }
+    ],
+    "name": "updateProfile",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum SmartCribsCore.UserRole",
+        "name": "newRole",
+        "type": "uint8"
+      }
+    ],
+    "name": "updateUserRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "userListings",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userProfiles",
+    "outputs": [
+      {
+        "internalType": "enum SmartCribsCore.UserRole",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "internalType": "string",
+        "name": "fullName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "profileHash",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reputationScore",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalTransactions",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isActive",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "userReviews",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "verified",
+        "type": "bool"
+      },
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "verifyProperty",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawTokenFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ] as const; 
