@@ -1,9 +1,9 @@
 import HeroSection from '@/components/molecules/HeroSection';
 import PropertyShowcase from '@/components/molecules/PropertyShowcase';
+import ReviewsSection from '@/components/molecules/ReviewsSection';
 import TrustSection from '@/components/molecules/TrustSection';
 import FeaturesSection from '@/components/molecules/FeaturesSection';
 import CTASection from '@/components/molecules/CTASection';
-import ReviewsPage from '@/components/molecules/ReviewPage';
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
       <main className="pt-16">
         <HeroSection />
         <PropertyShowcase />
-        <ReviewsPage />
+        <ReviewsSection />
         <TrustSection />
         <FeaturesSection />
         <CTASection />

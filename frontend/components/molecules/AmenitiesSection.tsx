@@ -14,6 +14,7 @@ type AmenityTypes = {
   gym: boolean;
   fireplace: boolean;
   securitySystem: boolean;
+  dishwasher: boolean;
 };
 
 const AmenitiesSection = () => {

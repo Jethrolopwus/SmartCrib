@@ -1,6 +1,6 @@
 // TypeScript types for SmartCribsCore contract interactions
 export type UserRole = 0 | 1 | 2; // Renter, Homeowner, Agent
-export type TransactionType = 0 | 1; // Rent, Sale
+export type TransactionType = 0 | 1 | 2; // Rent, Sale, Swap
 export type ListingStatus = 0 | 1 | 2 | 3; // Active, Inactive, Rented, Sold
 export type VerificationStatus = 0 | 1 | 2; // Pending, Verified, Rejected
 
