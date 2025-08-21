@@ -1,13 +1,15 @@
 import { http, createConfig } from 'wagmi'
-import { mainnet, sepolia, polygon } from 'wagmi/chains'
+import { mainnet, sepolia } from 'wagmi/chains'
 import { injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ''
 
 export const config = createConfig({
-  chains: [mainnet, sepolia, polygon],
+  chains: [mainnet, sepolia],
   connectors: [
-    injected(),
+    injected({
+      target: 'metaMask',
+    }),
     metaMask(),
     safe(),
     ...(projectId ? [walletConnect({ projectId })] : []),
@@ -15,6 +17,7 @@ export const config = createConfig({
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
-    [polygon.id]: http(),
   },
+  // Enable SSR to prevent hydration issues
+  ssr: true,
 }) 
