@@ -1,0 +1,9 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployer": "0x062189AFd7220eEC9995E0B628D7Ccc217687329",
+  "contracts": {
+    "SmartCribsCore": "0x3Fd7B15519936F88525047bbD3150438074F8195"
+  },
+  "deploymentTime": "2025-08-21T22:05:52.585Z"
+}
